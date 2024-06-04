@@ -1,0 +1,48 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: rgb(25,0,114);
+    background: linear-gradient(118deg, rgba(25,0,114,1) 31%, rgba(119,52,204,1) 100%, rgba(192,161,227,1) 100%);
+}
+
+.login-card {
+    background: rgb(176, 163, 255);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(20, 20, 20, 0.1);
+    max-width: 450px;
+    width: 100%;
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #1e1e1e;
+}
+
+.input-group-text {
+    background: #15043a;
+    color: white;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #979696;
+}
+
+.btn-success {
+    background: #09033b;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #21058f;
+}
+
+.validation-message {
+    color: rgb(217, 5, 5);
+    text-align: center;
+    font-size: large;
+}

@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.card {
+    margin: 10px;
+    max-width: 300px; /* Ancho máximo de las cards */
+    width: 100%; /* Asegura que las cards ocupen todo el ancho disponible */
+    padding: 10px;
+}
+
+/* Estilo para eliminar el subrayado azul de los enlaces */
+a {
+    text-decoration: none; /* Elimina el subrayado */
+    color: inherit; /* Hereda el color del texto para los enlaces */
+}

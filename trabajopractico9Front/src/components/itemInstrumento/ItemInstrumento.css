@@ -1,0 +1,65 @@
+.tarjeta{
+    width: 19rem;
+    background-color: aliceblue;
+    padding: 0px;
+    height: 550px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los elementos horizontalmente */
+}
+
+.img-altura{
+    margin-top: 10px;
+    min-height: 100px;
+    max-height: 200px;
+    min-width: 100px;
+    max-width: 200px;
+
+}
+
+.altura-cuerpo{
+    min-height: 300px;
+    max-height: 300px;
+    width: 100%; /* Asegura que el contenido ocupe todo el ancho disponible */
+    padding: 10px; /* Opcional: agrega un poco de padding para el contenido */
+}
+
+.espacio{
+    padding: 5px;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 200px; /* Asegura que el contenedor tenga la misma altura que la imagen */
+}
+
+.icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Espacio entre los iconos */
+    margin-top: 10px;
+}
+
+.iconoMasMenos, .colorFondoBlanco {
+    font-size: 1.5rem; /* Ajusta el tamaño de los iconos y botones */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+.iconoMasMenos {
+    color: #007bff; /* Color de los iconos */
+}
+
+.colorFondoBlanco {
+    background-color: transparent; /* Fondo transparente para el botón */
+    border: none; /* Sin borde para el botón */
+    outline: none; /* Sin contorno al hacer clic */
+}
+
+.colorFondoBlanco i {
+    font-size: 2rem; /* Tamaño del icono dentro del botón */
+    color: #007bff; /* Color del icono dentro del botón */
+}

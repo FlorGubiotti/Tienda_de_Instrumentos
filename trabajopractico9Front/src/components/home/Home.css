@@ -1,0 +1,15 @@
+.container {
+    margin-top: 20px;
+}
+
+.description {
+    font-size: 1.2rem;
+    margin-top: 30px;
+}
+
+.pt-serif-regular-italic {
+    font-family: "PT Serif", serif;
+    font-weight: 400;
+    font-style: italic;
+    color: #272626;
+}
