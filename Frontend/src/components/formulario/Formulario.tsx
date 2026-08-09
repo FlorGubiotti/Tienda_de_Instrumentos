@@ -9,7 +9,7 @@ import Categoria from '../../entities/Categoria';
 function Formulario() {
     const navigate = useNavigate();
 
-    const { idInstrumento } = useParams();
+    const { id: idInstrumento } = useParams();
     const [instrumento, setInstrumento] = useState<Instrumento>(new Instrumento());
     const [categorias, setCategorias] = useState<Categoria[]>([]); // Aquí se especifica el tipo explícito
     const [txtValidacion, setTxtValidacion] = useState<string>("");
@@ -51,6 +51,10 @@ function Formulario() {
     }, []);
 
     const save = async () => {
+        if (!instrumento.instrumento || instrumento.instrumento === "") {
+            setTxtValidacion("Ingrese el nombre del instrumento");
+            return;
+        }
         if (!instrumento.marca || instrumento.marca === "") {
             setTxtValidacion("Ingrese la marca del instrumento");
             return;
@@ -63,12 +67,9 @@ function Formulario() {
             setTxtValidacion("El precio debe ser distinto de cero");
             return;
         }
-        if (idInstrumento === '0') {
-            const imageInput = document.getElementById('txtImagen') as HTMLInputElement;
-            if (!imageInput?.files?.[0]) {
-                setTxtValidacion("Por favor, seleccione una imagen");
-                return;
-            }
+        if (!instrumento.imagen || instrumento.imagen === "") {
+            setTxtValidacion("Ingrese el nombre del archivo de imagen");
+            return;
         }
         if (!instrumento.descripcion || instrumento.descripcion === "") {
             setTxtValidacion("Ingrese una descripción del instrumento");
@@ -80,7 +81,7 @@ function Formulario() {
         }
 
         // Procesamiento del costo de envío
-        if (instrumento.costoEnvio === "Gratis") {
+        if (instrumento.costoEnvio === "Gratis" || instrumento.costoEnvio === "G") {
             instrumento.costoEnvio = "G"; // Asigna "G" si el costo de envío es "Gratis"
         } else if (!isValidCostoEnvio(instrumento.costoEnvio)) {
             setTxtValidacion("El costo de envío ingresado no es válido. Ingrese 'Gratis' o un número");
@@ -111,8 +112,12 @@ function Formulario() {
         <>
             <div className="center" style={{ margin: '20px' }}>
                 <div className="mb-3">
-                    <label htmlFor="txtNombre" className="form-label">Marca</label>
-                    <input type="text" id='txtNombre' className="form-control" placeholder="Ingrese la marca" defaultValue={instrumento?.marca} onChange={e => instrumento.marca = String(e.target.value)} />
+                    <label htmlFor="txtInstrumento" className="form-label">Nombre del Instrumento</label>
+                    <input type="text" id='txtInstrumento' className="form-control" placeholder="Ingrese el nombre del instrumento" defaultValue={instrumento?.instrumento} onChange={e => instrumento.instrumento = String(e.target.value)} />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="txtMarca" className="form-label">Marca</label>
+                    <input type="text" id='txtMarca' className="form-control" placeholder="Ingrese la marca" defaultValue={instrumento?.marca} onChange={e => instrumento.marca = String(e.target.value)} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtPrecio" className="form-label">Precio</label>
@@ -131,6 +136,10 @@ function Formulario() {
                 <div className="mb-3">
                     <label htmlFor="txtRubro" className="form-label">Modelo</label>
                     <input type="text" id='txtRubro' className="form-control" placeholder="Ingrese el modelo" defaultValue={instrumento?.modelo} onChange={e => instrumento.modelo = String(e.target.value)} />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="txtImagen" className="form-label">Imagen</label>
+                    <input type="text" id='txtImagen' className="form-control" placeholder="Nombre del archivo en static/images (ej: nro1.jpg)" defaultValue={instrumento?.imagen} onChange={e => instrumento.imagen = String(e.target.value)} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtDescripcion" className="form-label">Descripción</label>
