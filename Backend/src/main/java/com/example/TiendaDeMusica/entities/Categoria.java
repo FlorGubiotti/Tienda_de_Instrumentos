@@ -3,6 +3,7 @@ package com.example.TiendaDeMusica.entities;
 import com.example.TiendaDeMusica.entities.Enum.Categorias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -17,10 +18,11 @@ import java.util.List;
 @SuperBuilder
 public class Categoria extends BaseEntity{
 
+    @NotNull(message = "La denominación es obligatoria.")
     @Enumerated(EnumType.STRING)
     private Categorias denominacion;
 
-    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
     @Builder.Default //Builder no sobreescribe la inicializacion de la lista
     @JsonIgnoreProperties("categoria")
     private List<Instrumento> instrumentos = new ArrayList<>();

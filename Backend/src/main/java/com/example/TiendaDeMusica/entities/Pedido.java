@@ -7,6 +7,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -24,8 +26,11 @@ import java.util.List;
 public class Pedido extends BaseEntity{
 
     private Date fecha;
+
+    @NotBlank(message = "El título es obligatorio.")
     private String titulo;
 
+    @NotNull(message = "El total del pedido es obligatorio.")
     @Column(precision = 12, scale = 2)
     private BigDecimal totalPedido;
 
