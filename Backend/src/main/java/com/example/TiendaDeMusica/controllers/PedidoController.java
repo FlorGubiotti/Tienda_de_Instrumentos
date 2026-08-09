@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping(path = "api/pedido")
 public class PedidoController extends  BaseControllerImpl<Pedido, PedidoServiceImpl>{
 

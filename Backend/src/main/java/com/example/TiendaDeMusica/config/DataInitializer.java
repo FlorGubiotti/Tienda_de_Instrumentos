@@ -12,6 +12,7 @@ import com.example.TiendaDeMusica.repositories.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,15 +24,18 @@ public class DataInitializer implements CommandLineRunner {
     private final CategoriaRepository categoriaRepository;
     private final UsuarioRepository usuarioRepository;
     private final InstrumentoRepository instrumentoRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(
             CategoriaRepository categoriaRepository,
             UsuarioRepository usuarioRepository,
-            InstrumentoRepository instrumentoRepository) {
+            InstrumentoRepository instrumentoRepository,
+            PasswordEncoder passwordEncoder) {
 
         this.categoriaRepository = categoriaRepository;
         this.usuarioRepository = usuarioRepository;
         this.instrumentoRepository = instrumentoRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -91,29 +95,26 @@ public class DataInitializer implements CommandLineRunner {
 
         Usuario admin = Usuario.builder()
                 .nombreUsuario("admin")
-                .clave("admin123")
+                .clave(passwordEncoder.encode("admin123"))
                 .rol(Rol.ADMIN)
                 .build();
 
-        admin.setClave(admin.getClave());
         usuarioRepository.save(admin);
 
         Usuario operador = Usuario.builder()
                 .nombreUsuario("operador")
-                .clave("operador123")
+                .clave(passwordEncoder.encode("operador123"))
                 .rol(Rol.OPERADOR)
                 .build();
 
-        operador.setClave(operador.getClave());
         usuarioRepository.save(operador);
 
         Usuario visor = Usuario.builder()
                 .nombreUsuario("visor")
-                .clave("visor123")
+                .clave(passwordEncoder.encode("visor123"))
                 .rol(Rol.VISOR)
                 .build();
 
-        visor.setClave(visor.getClave());
         usuarioRepository.save(visor);
 
         logger.info("Usuarios creados.");

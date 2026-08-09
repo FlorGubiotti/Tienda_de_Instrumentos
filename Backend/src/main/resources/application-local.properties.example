@@ -4,3 +4,6 @@ spring.datasource.password=changeme
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 mercadopago.access-token=your-mercadopago-access-token
+
+# Random string, 32+ bytes. Generate e.g. with: openssl rand -base64 48
+jwt.secret=change-this-to-a-random-secret-of-at-least-32-bytes

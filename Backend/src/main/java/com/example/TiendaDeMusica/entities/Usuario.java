@@ -1,6 +1,7 @@
 package com.example.TiendaDeMusica.entities;
 
 import com.example.TiendaDeMusica.entities.Enum.Rol;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,9 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 @Entity
 @Getter
@@ -22,26 +20,10 @@ import java.security.NoSuchAlgorithmException;
 public class Usuario extends BaseEntity {
 
     private String nombreUsuario;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String clave;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
-
-    public void setClave(String clave) {
-        this.clave = encriptarClave(clave);
-    }
-
-    private String encriptarClave(String clave) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            byte[] messageDigest = md.digest(clave.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : messageDigest) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
