@@ -88,7 +88,7 @@ export function Carrito() {
             <button className="btn-guardar" onClick={handleGuardarCarrito}>
               GUARDAR CARRITO
             </button>
-            <CheckoutMP montoCarrito={totalProductos}></CheckoutMP>
+            <CheckoutMP cart={cart}></CheckoutMP>
           </>
 
         )}

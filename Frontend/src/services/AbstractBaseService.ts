@@ -1,5 +1,5 @@
 import PreferenceMP from "../entities/MercadoPago/PreferenceMP";
-import Pedido from "../entities/Pedido";
+import CrearPreferenciaRequest from "../entities/MercadoPago/CrearPreferenciaRequest";
 
 // Clase abstracta que define métodos para operaciones CRUD en un servicio genérico
 export abstract class AbstractBaseService<T> {
@@ -21,6 +21,6 @@ export abstract class AbstractBaseService<T> {
   abstract saveWithFile(url: string, formData: FormData): Promise<string>;
 
   // Método abstracto para crear una preferencia de Mercado Pago
-  abstract createPreferenceMP(pedido?: Pedido): Promise<PreferenceMP>;
+  abstract createPreferenceMP(request: CrearPreferenciaRequest): Promise<PreferenceMP>;
 
 }

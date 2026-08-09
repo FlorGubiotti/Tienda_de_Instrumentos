@@ -1,7 +1,10 @@
 package com.example.TiendaDeMusica.services;
 
-import com.example.TiendaDeMusica.entities.Pedido;
+import com.example.TiendaDeMusica.dto.CrearPreferenciaRequest;
+import com.example.TiendaDeMusica.dto.ItemPedidoRequest;
+import com.example.TiendaDeMusica.entities.Instrumento;
 import com.example.TiendaDeMusica.entities.PreferenceMP;
+import com.example.TiendaDeMusica.repositories.InstrumentoRepository;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
 import com.mercadopago.client.preference.PreferenceClient;
@@ -21,21 +24,34 @@ public class MercadoPagoService {
     @Value("${mercadopago.access-token}")
     private String accessToken;
 
-    public PreferenceMP createPreference(Pedido pedido) {
+    private final InstrumentoRepository instrumentoRepository;
+
+    public MercadoPagoService(InstrumentoRepository instrumentoRepository) {
+        this.instrumentoRepository = instrumentoRepository;
+    }
+
+    public PreferenceMP createPreference(CrearPreferenciaRequest request) {
         try {
+            if (request.items() == null || request.items().isEmpty()) {
+                throw new IllegalArgumentException("El pedido no tiene items.");
+            }
+
             MercadoPagoConfig.setAccessToken(accessToken);
 
-            PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                    .id("1234")
-                    .title(pedido.getTitulo())
-                    .description("Pedido realizado desde el carrito de compras")
-                    .pictureUrl("https://img-global.cpcdn.com/recipes/0709fbb52d87d2d7/1200x630cq70/photo.jpg")
-                    .quantity(1)
-                    .currencyId("ARS") // Cambia "ARG" por "ARS"
-                    .unitPrice(new BigDecimal(pedido.getTotalPedido()))
-                    .build();
             List<PreferenceItemRequest> items = new ArrayList<>();
-            items.add(itemRequest);
+            for (ItemPedidoRequest itemPedido : request.items()) {
+                Instrumento instrumento = instrumentoRepository.findById(itemPedido.instrumentoId())
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "No existe el instrumento " + itemPedido.instrumentoId()));
+
+                items.add(PreferenceItemRequest.builder()
+                        .id(instrumento.getId().toString())
+                        .title(instrumento.getInstrumento())
+                        .quantity(itemPedido.cantidad())
+                        .currencyId("ARS")
+                        .unitPrice(BigDecimal.valueOf(instrumento.getPrecio()))
+                        .build());
+            }
 
             PreferenceBackUrlsRequest backURL = PreferenceBackUrlsRequest.builder()
                     .success("http://localhost:5173/mpsuccess")

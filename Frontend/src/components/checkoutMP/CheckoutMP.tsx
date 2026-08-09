@@ -1,26 +1,34 @@
 import { useState } from "react";
 import PreferenceMPService from "../../services/PreferenceMPService";
-import Pedido from "../../entities/Pedido";
+import DetallePedido from "../../entities/DetallePedido";
+import CrearPreferenciaRequest from "../../entities/MercadoPago/CrearPreferenciaRequest";
 import { Wallet, initMercadoPago } from "@mercadopago/sdk-react";
 import './CheckoutMP.css'
 
-function CheckoutMP({ montoCarrito = 0 }) {
+interface CheckoutMPProps {
+  cart: DetallePedido[];
+}
+
+function CheckoutMP({ cart }: CheckoutMPProps) {
   const [idPreference, setIdPreference] = useState<string>('');
   const preferenceMPService = new PreferenceMPService();
-  const [mostrarPagoMP, setMostrarPagoMP] = useState(false); 
+  const [mostrarPagoMP, setMostrarPagoMP] = useState(false);
 
   const getPreferenceMP = async () => {
-    if (montoCarrito > 0) {
-      const nuevoPedido = new Pedido();
-      nuevoPedido.titulo = 'Pedido Musical Hendrix';
-      nuevoPedido.totalPedido = montoCarrito;
+    if (cart.length > 0) {
+      const request = new CrearPreferenciaRequest();
+      request.titulo = 'Pedido Musical Hendrix';
+      request.items = cart.map((detalle) => ({
+        instrumentoId: detalle.instrumento.id,
+        cantidad: detalle.cantidad,
+      }));
 
       try {
-        const response = await preferenceMPService.createPreferenceMP(nuevoPedido);
+        const response = await preferenceMPService.createPreferenceMP(request);
         if (response && response.id) {
           console.log("Preference id: " + response.id);
           setIdPreference(response.id);
-          setMostrarPagoMP(true); 
+          setMostrarPagoMP(true);
         } else {
           console.error('Error: La respuesta de la API no contiene un ID de preferencia.');
         }
@@ -37,7 +45,7 @@ function CheckoutMP({ montoCarrito = 0 }) {
   return (
     <div>
       <button onClick={getPreferenceMP} className="btn-mercado-pago" >COMPRAR con Mercado Pago</button>
-      {mostrarPagoMP && ( 
+      {mostrarPagoMP && (
               <div className={idPreference ? 'divVisible' : 'divInvisible'}>
               <Wallet initialization={{ preferenceId: idPreference, redirectMode: "blank" }} customization={{ texts: { valueProp: 'smart_option' } }} />
             </div>

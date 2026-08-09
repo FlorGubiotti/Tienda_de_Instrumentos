@@ -7,7 +7,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 
 function Login() {
   const navigate = useNavigate();
-  const [usuario, setUsuario] = useState<Usuario>(new Usuario());
+  const [usuario] = useState<Usuario>(new Usuario());
   const [txtValidacion, setTxtValidacion] = useState<string>("");
 
   const handleLogin = async () => {

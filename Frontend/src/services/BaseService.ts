@@ -1,7 +1,7 @@
 // Importación de la clase abstracta AbstractBackendClient
 
 import PreferenceMP from "../entities/MercadoPago/PreferenceMP";
-import Pedido from "../entities/Pedido";
+import CrearPreferenciaRequest from "../entities/MercadoPago/CrearPreferenciaRequest";
 import { AbstractBaseService } from "./AbstractBaseService";
 
 // Arma el header Authorization a partir del token guardado en el login, si existe
@@ -142,7 +142,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     }
   }
 
-  async createPreferenceMP(pedido: Pedido): Promise<PreferenceMP> {
+  async createPreferenceMP(request: CrearPreferenciaRequest): Promise<PreferenceMP> {
     const urlServer = 'http://localhost:8080/api/mercado_pago/create_preference';
     try {
       const response = await fetch(urlServer, {
@@ -151,7 +151,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
           "Content-Type": "application/json",
           ...authHeader(),
         },
-        body: JSON.stringify(pedido)
+        body: JSON.stringify(request)
       });
       if (!response.ok) {
         throw new Error(`Error al crear preferencia de Mercado Pago: ${response.statusText}`);
