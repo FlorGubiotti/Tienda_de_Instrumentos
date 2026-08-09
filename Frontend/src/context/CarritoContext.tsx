@@ -79,6 +79,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
             // Crear un nuevo pedido con la fecha y el total
             const nuevoPedido = new Pedido();
             nuevoPedido.fecha = new Date();
+            nuevoPedido.titulo = 'Pedido Musical Hendrix';
             nuevoPedido.totalPedido = cart.reduce((total, detalle) => total + detalle.instrumento.precio * detalle.cantidad, 0);
 
             // Guardar el pedido en el backend
