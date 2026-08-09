@@ -19,13 +19,13 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
     }
 
     @Override
-    public Usuario save(Usuario entity) throws Exception {
+    public Usuario save(Usuario entity) {
         entity.setClave(passwordEncoder.encode(entity.getClave()));
         return super.save(entity);
     }
 
     @Override
-    public Usuario update(Usuario entity) throws Exception {
+    public Usuario update(Usuario entity) {
         if (entity.getClave() == null || entity.getClave().isBlank()) {
             Usuario existente = findById(entity.getId());
             entity.setClave(existente.getClave());

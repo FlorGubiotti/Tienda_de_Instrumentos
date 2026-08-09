@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "api/detallePedido")
 public class DetallePedidoController extends BaseControllerImpl<DetallePedido, DetallePedidoServiceImpl>{
 
-    private DetallePedidoServiceImpl service;
     public DetallePedidoController(DetallePedidoServiceImpl service) {
         super(service);
     }

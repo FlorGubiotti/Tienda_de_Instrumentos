@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "api/usuario")
 public class UsuarioController extends BaseControllerImpl<Usuario, UsuarioServiceImpl>{
-    private UsuarioServiceImpl service;
     public UsuarioController(UsuarioServiceImpl service) {
         super(service);
     }

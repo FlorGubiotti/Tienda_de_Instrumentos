@@ -14,51 +14,32 @@ public abstract class BaseControllerImpl<T extends BaseEntity, S extends BaseSer
     public BaseControllerImpl(S servicio) {
         this.servicio = servicio;
     }
+
     @GetMapping("")
     public ResponseEntity<?> getAll() {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(servicio.findAll());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor intente más tarde.\"}");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(servicio.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable Long id) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(servicio.findById(id));
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error, por favor intente mas tarde.\"}");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(servicio.findById(id));
     }
 
     @PostMapping("")
     public ResponseEntity<?> save(@RequestBody T entity){
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(servicio.save(entity));
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error, por favor intente mas tarde.\"}");
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(servicio.save(entity));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody T entity) {
-        try {
-            T updatedEntity = servicio.update(entity);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error, por favor intente más tarde.\"}");
-        }
+        entity.setId(id);
+        T updatedEntity = servicio.update(entity);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedEntity);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(servicio.delete(id));
-        }catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"Error, por favor intente mas tarde.\"}");
-        }
+        servicio.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
-

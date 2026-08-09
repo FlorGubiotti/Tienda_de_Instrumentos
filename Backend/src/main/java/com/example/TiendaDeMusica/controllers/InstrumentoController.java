@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "api/instrumentos")
 public class InstrumentoController extends BaseControllerImpl<Instrumento, InstrumentoServiceImpl> {
-    private InstrumentoServiceImpl service;
     public InstrumentoController(InstrumentoServiceImpl service) {
         super(service);
     }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "api/categoria")
 public class CategoriaController extends BaseControllerImpl<Categoria, CategoriaServiceImpl>{
-    private CategoriaServiceImpl service;
     public CategoriaController(CategoriaServiceImpl service) {
         super(service);
     }
