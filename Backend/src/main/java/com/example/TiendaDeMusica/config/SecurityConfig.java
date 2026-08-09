@@ -57,6 +57,11 @@ public class SecurityConfig {
                                 "/api/pedido/piechart",
                                 "/api/pedido/downloadExcel",
                                 "/api/pedido/downloadPdf/**").hasRole("ADMIN")
+                        // Ver/editar/borrar pedidos ajenos es cosa de administración; el checkout
+                        // de un usuario cualquiera solo necesita poder crear (POST) el suyo.
+                        .requestMatchers(HttpMethod.GET, "/api/pedido/**", "/api/detallePedido/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/pedido/**", "/api/detallePedido/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/pedido/**", "/api/detallePedido/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
