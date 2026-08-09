@@ -5,6 +5,7 @@ import InstrumentoService from "../../services/InstrumentoService";
 import './DetalleInstrumentos.css';
 import Usuario from "../../entities/Usuario";
 import { Roles } from "../../entities/Roles";
+import { descargarArchivo } from "../../services/descargarArchivo";
 
 const DetalleInstrumentos = () => {
   const { id } = useParams();
@@ -29,7 +30,7 @@ const DetalleInstrumentos = () => {
   }, [id]);
 
   const generarPDF = () => {
-    window.open("http://localhost:8080/api/pedido/downloadPdf/" + id, "_blank");
+    descargarArchivo("http://localhost:8080/api/pedido/downloadPdf/" + id, "documento.pdf");
   }
 
   if (loading) {

@@ -6,6 +6,7 @@ import CategoriaService from "../../services/CategoriaService";
 import { Link } from "react-router-dom";
 import Usuario from "../../entities/Usuario";
 import { Roles } from "../../entities/Roles";
+import { descargarArchivo } from "../../services/descargarArchivo";
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 import './GrillaInstrumentos.css'
@@ -57,12 +58,10 @@ const GrillaInstrumentos = () => {
         window.location.reload();
     };
 
-    const generarExcel = () => {
+    const generarExcel = async () => {
         if (fechaDesde && fechaHasta) {
             const url = `http://localhost:8080/api/pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
-
-            // Abrir la URL en una nueva pestaña
-            window.open(url, '_blank');
+            await descargarArchivo(url, 'datos.xlsx');
             cerrarModal();
         } else {
             alert('Por favor ingresa ambas fechas.');

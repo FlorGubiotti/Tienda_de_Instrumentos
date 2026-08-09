@@ -4,6 +4,20 @@ import PreferenceMP from "../entities/MercadoPago/PreferenceMP";
 import Pedido from "../entities/Pedido";
 import { AbstractBaseService } from "./AbstractBaseService";
 
+// Arma el header Authorization a partir del token guardado en el login, si existe
+export function authHeader(): Record<string, string> {
+  const jsonSesion = localStorage.getItem("usuario");
+  if (!jsonSesion) {
+    return {};
+  }
+  try {
+    const { token } = JSON.parse(jsonSesion);
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 // Clase abstracta que proporciona métodos genéricos para interactuar con una API
 export default abstract class BaseService<T> extends AbstractBaseService<T> {
   // Método protegido para realizar una solicitud genérica
@@ -45,6 +59,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "GET",
+      headers: { ...authHeader() },
     };
     return this.request(path, options);
   }
@@ -54,6 +69,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     const path = url;
     const options: RequestInit = {
       method: "GET",
+      headers: { ...authHeader() },
     };
     return this.requestAll(path, options);
   }
@@ -66,6 +82,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        ...authHeader(),
       },
       body: JSON.stringify(data),
     };
@@ -81,6 +98,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        ...authHeader(),
       },
       body: JSON.stringify(data),
     };
@@ -94,6 +112,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        ...authHeader(),
       },
     };
     try {
@@ -108,6 +127,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     try {
         const options: RequestInit = {
             method: 'POST',
+            headers: { ...authHeader() },
             body: formData
         };
         const response = await fetch(url, options);
@@ -120,15 +140,16 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     } catch (error) {
         throw new Error(`Error al guardar la imagen del instrumento`);
     }
-  } 
+  }
 
   async createPreferenceMP(pedido: Pedido): Promise<PreferenceMP> {
-    const urlServer = 'http://localhost:8080/api/mercado_pago/create_preference'; 
+    const urlServer = 'http://localhost:8080/api/mercado_pago/create_preference';
     try {
       const response = await fetch(urlServer, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...authHeader(),
         },
         body: JSON.stringify(pedido)
       });

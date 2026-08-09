@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Usuario from "../../entities/Usuario";
-import UsuarioService from "../../services/UsuarioService";
-import * as sha1 from "js-sha1";
+import { login } from "../../services/AuthService";
 import './Login.css';
 import { FaUser, FaLock } from "react-icons/fa";
 
@@ -10,19 +9,8 @@ function Login() {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState<Usuario>(new Usuario());
   const [txtValidacion, setTxtValidacion] = useState<string>("");
-  const url = import.meta.env.VITE_API_URL;
-  const usuarioService = new UsuarioService();
-  const [users, setUsers] = useState<Usuario[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const userData = await usuarioService.getAll(url + "usuario");
-      setUsers(userData);
-    };
-    fetchData();
-  }, []);
-
-  const login = async () => {
+  const handleLogin = async () => {
     if (!usuario?.nombreUsuario || usuario?.nombreUsuario === "") {
       setTxtValidacion("Ingrese el nombre de usuario");
       return;
@@ -32,33 +20,18 @@ function Login() {
       return;
     }
 
-    // Busca el usuario en la lista de usuarios
-    const foundUser = users.find(
-      (user) => user.nombreUsuario.toLowerCase() === usuario.nombreUsuario.toLowerCase()
-    );
-
-    if (foundUser) {
-      // Usuario encontrado, verificar la contraseña
-      if (sha1.sha1(usuario.clave) === foundUser.clave) {
-        setUsuario({
-          id: foundUser.id,
-          nombreUsuario: foundUser.nombreUsuario,
-          clave: foundUser.clave,
-          rol: foundUser.rol,
-        });
-        localStorage.setItem("usuario", JSON.stringify(foundUser));
-        navigate("/products", {
-          replace: true,
-          state: {
-            logged: true,
-            usuario: foundUser,
-          },
-        });
-      } else {
-        setTxtValidacion("Contraseña incorrecta");
-      }
-    } else {
-      setTxtValidacion("Usuario no encontrado");
+    try {
+      const sesion = await login(usuario.nombreUsuario, usuario.clave);
+      localStorage.setItem("usuario", JSON.stringify(sesion));
+      navigate("/products", {
+        replace: true,
+        state: {
+          logged: true,
+          usuario: sesion,
+        },
+      });
+    } catch (error) {
+      setTxtValidacion("Usuario o contraseña incorrectos");
     }
   };
 
@@ -79,7 +52,7 @@ function Login() {
               defaultValue={usuario?.nombreUsuario}
               onChange={(e) => (usuario.nombreUsuario = String(e.target.value))}
               onKeyDown={(e) => {
-                if (e.key === "Enter") login();
+                if (e.key === "Enter") handleLogin();
               }}
             />
           </div>
@@ -95,12 +68,12 @@ function Login() {
               defaultValue={usuario?.clave}
               onChange={(e) => (usuario.clave = String(e.target.value))}
               onKeyDown={(e) => {
-                if (e.key === "Enter") login();
+                if (e.key === "Enter") handleLogin();
               }}
             />
           </div>
           <div className="d-grid">
-            <button onClick={login} className="btn btn-success" type="button">
+            <button onClick={handleLogin} className="btn btn-success" type="button">
               Ingresar
             </button>
           </div>
