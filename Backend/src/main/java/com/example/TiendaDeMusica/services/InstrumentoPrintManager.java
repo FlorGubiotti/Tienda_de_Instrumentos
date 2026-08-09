@@ -1,6 +1,7 @@
 package com.example.TiendaDeMusica.services;
 
 import com.example.TiendaDeMusica.entities.Instrumento;
+import com.example.TiendaDeMusica.repositories.InstrumentoRepository;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Image;
@@ -8,6 +9,7 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +17,15 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.*;
 
 @Service
 public class InstrumentoPrintManager {
 
-    String urlConexion = "jdbc:mysql://localhost:3306/instrumentosdb";
-    String usuario = "root";
-    String clave = "***REMOVED_DB_PASSWORD***";
+    private final InstrumentoRepository instrumentoRepository;
+
+    public InstrumentoPrintManager(InstrumentoRepository instrumentoRepository) {
+        this.instrumentoRepository = instrumentoRepository;
+    }
 
     protected static Font titulo = new Font(Font.HELVETICA, 18, Font.BOLD);
     protected static Font subtitulo = new Font(Font.HELVETICA, 14, Font.BOLD);
@@ -74,7 +77,7 @@ public class InstrumentoPrintManager {
         table.addCell(emptyCell);
     }
 
-    public void imprimirInstrumentoPdf(Long idInstrumento, ByteArrayOutputStream outputStream) throws SQLException {
+    public void imprimirInstrumentoPdf(Long idInstrumento, ByteArrayOutputStream outputStream) {
         try {
             Document document = new Document(PageSize.A4, 30, 30, 30, 30);
             addMetaData(document);
@@ -99,7 +102,7 @@ public class InstrumentoPrintManager {
             document.add(tableCabecera);
             logger.info("Encabezado agregado");
 
-            Image imgCabeceraRight = Image.getInstance("https://upload.wikimedia.org/wikipedia/commons/6/67/UTN_logo.jpg");
+            Image imgCabeceraRight = Image.getInstance("src/main/resources/static/images/UTN_logo.jpg");
             imgCabeceraRight.scalePercent(10f);
             imgCabeceraRight.setBorder(Rectangle.NO_BORDER);
 
@@ -198,39 +201,9 @@ public class InstrumentoPrintManager {
         }
     }
 
-    public Instrumento getInstrumentoById(long idInstrumento) throws SQLException{
-        ResultSet rs = null;
-        Instrumento instrumento = new Instrumento();
-        Connection conexion = null;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conexion = DriverManager.getConnection(urlConexion, usuario, clave);
-
-            Statement s = conexion.createStatement();
-
-            // Se realiza la consulta. Los resultados se guardan en el
-            // ResultSet rs
-            rs = s.executeQuery("SELECT * from instrumento WHERE id = " + idInstrumento);
-            while (rs.next()) {
-                instrumento.setId(Long.parseLong(rs.getString("id")));
-                instrumento.setInstrumento(rs.getString("instrumento"));
-                instrumento.setMarca(rs.getString("marca"));
-                instrumento.setModelo(rs.getString("modelo"));
-                instrumento.setImagen(rs.getString("imagen"));
-                instrumento.setPrecio(rs.getDouble("precio"));
-                instrumento.setCostoEnvio(rs.getString("costo_envio"));
-                instrumento.setCantidadVendida(rs.getInt("cantidad_vendida"));
-                instrumento.setDescripcion(rs.getString("descripcion"));
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }finally{
-            if(conexion != null)
-                conexion.close();
-        }
-        return instrumento;
+    public Instrumento getInstrumentoById(long idInstrumento) {
+        return instrumentoRepository.findById(idInstrumento)
+                .orElseThrow(() -> new EntityNotFoundException("No existe el instrumento " + idInstrumento));
     }
 
     private static final Logger logger = LoggerFactory.getLogger(InstrumentoPrintManager.class);

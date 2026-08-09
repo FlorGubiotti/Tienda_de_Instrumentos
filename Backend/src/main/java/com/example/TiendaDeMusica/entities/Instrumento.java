@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,10 @@ public class Instrumento extends BaseEntity{
     private String marca;
     private String modelo;
     private String imagen;
-    private double precio;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal precio;
+
     private String costoEnvio;
     private int cantidadVendida;
     private String descripcion;
@@ -35,11 +39,4 @@ public class Instrumento extends BaseEntity{
     @Builder.Default //Builder no sobreescribe la inicializacion de la lista
     @JsonIgnoreProperties("instrumento")
     private List<DetallePedido> detallePedidos = new ArrayList<>();
-
-    public Instrumento(String instrumento, String marca, String modelo, double precio) {
-        this.instrumento = instrumento;
-        this.marca = marca;
-        this.modelo = modelo;
-        this.precio = precio;
-    }
 }

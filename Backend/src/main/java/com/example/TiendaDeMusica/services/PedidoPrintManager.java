@@ -1,15 +1,12 @@
 package com.example.TiendaDeMusica.services;
 
 import com.example.TiendaDeMusica.entities.DetallePedido;
-import com.example.TiendaDeMusica.entities.Instrumento;
 import com.example.TiendaDeMusica.entities.Pedido;
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
+import com.example.TiendaDeMusica.repositories.PedidoRepository;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -19,20 +16,18 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PedidoPrintManager {
 
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoRepository pedidoRepository;
 
-    String urlConexion = "jdbc:mysql://localhost:3306/instrumentosdb";
-    String usuario = "root";
-    String clave = "***REMOVED_DB_PASSWORD***";
+    public PedidoPrintManager(PedidoRepository pedidoRepository) {
+        this.pedidoRepository = pedidoRepository;
+    }
 
-    public SXSSFWorkbook imprimirExcelPedidos(Date fechaDesde, Date fechaHasta) throws IOException, SQLException {
+    public SXSSFWorkbook imprimirExcelPedidos(Date fechaDesde, Date fechaHasta) {
         // Se crea el libro
         SXSSFWorkbook libro = new SXSSFWorkbook(50);
         // Se crea una hoja dentro del libro
@@ -81,8 +76,6 @@ public class PedidoPrintManager {
         int nroFila = 1;
 
         List<Pedido> pedidos = getPedidosFromRangeOfDates(fechaDesde, fechaHasta);
-        // Punto de depuración 1: inspeccionar la lista de pedidos
-        System.out.println("Pedidos obtenidos: " + pedidos.size());
         for (Pedido pedido : pedidos) {
             for (DetallePedido detalle : pedido.getDetallePedidos()) {
                 nroColumna = 0;
@@ -101,85 +94,24 @@ public class PedidoPrintManager {
                 cell = row.createCell(++nroColumna);
                 cell.setCellValue(detalle.getCantidad());
                 cell = row.createCell(++nroColumna);
-                cell.setCellValue(detalle.getInstrumento().getPrecio());
+                BigDecimal precio = detalle.getInstrumento().getPrecio();
+                cell.setCellValue(precio.doubleValue());
                 cell = row.createCell(++nroColumna);
-                double subtotal = detalle.getCantidad() * detalle.getInstrumento().getPrecio();
-                cell.setCellValue(subtotal);
+                BigDecimal subtotal = precio.multiply(BigDecimal.valueOf(detalle.getCantidad()));
+                cell.setCellValue(subtotal.doubleValue());
                 ++nroFila;
             }
         }
         return libro;
     }
 
-    public List<Pedido> getPedidosFromRangeOfDates(final Date fechaDesde, final Date fechaHasta) {
-        List<Pedido> allPedidos = new ArrayList<>();
-        Date fechaHastaIncrementada = null;
-        try {
-            // Incrementar fechaHasta en un día
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(fechaHasta);
-            cal.add(Calendar.DATE, 1);
-            fechaHastaIncrementada = cal.getTime();
+    private List<Pedido> getPedidosFromRangeOfDates(Date fechaDesde, Date fechaHasta) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fechaHasta);
+        cal.add(Calendar.DATE, 1);
+        Date fechaHastaIncrementada = cal.getTime();
 
-            allPedidos = getPedidosFromRangeOfDatesUsingSQL(fechaDesde, fechaHastaIncrementada);
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        Date finalFechaHastaIncrementada = fechaHastaIncrementada;
-        return allPedidos.stream()
-                .filter(pedido -> (pedido.getFecha().equals(fechaDesde) || pedido.getFecha().after(fechaDesde))
-                        && (pedido.getFecha().equals(finalFechaHastaIncrementada) || pedido.getFecha().before(finalFechaHastaIncrementada)))
-                .collect(Collectors.toList());
+        return pedidoRepository.findByFechaBetweenWithDetalle(fechaDesde, fechaHastaIncrementada);
     }
-
-    private List<Pedido> getPedidosFromRangeOfDatesUsingSQL(Date fechaDesde, Date fechaHasta) throws SQLException, ClassNotFoundException {
-        ResultSet rs = null;
-        List<Pedido> pedidos = new ArrayList<>();
-        Connection conexion = null;
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conexion = DriverManager.getConnection(urlConexion, usuario, clave);
-
-            PreparedStatement ps = conexion.prepareStatement("SELECT p.*, i.instrumento, i.marca, i.modelo, i.precio, d.cantidad " +
-                    "FROM pedido p " +
-                    "JOIN detalle_pedido d ON p.id = d.id_pedido " +
-                    "JOIN instrumento i ON d.id_instrumento = i.id " +
-                    "WHERE p.fecha >= ? AND p.fecha <= ?");
-            ps.setDate(1, new java.sql.Date(fechaDesde.getTime()));
-            ps.setDate(2, new java.sql.Date(fechaHasta.getTime()));
-
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Pedido pedido = new Pedido();
-                pedido.setId(Long.parseLong(rs.getString("id")));
-                pedido.setFecha(rs.getDate("fecha"));
-                pedido.setTotalPedido(rs.getDouble("total_pedido"));
-                pedido.setTitulo(rs.getString("titulo"));
-                DetallePedido detalle = new DetallePedido();
-                detalle.setCantidad(rs.getInt("cantidad"));
-                detalle.setInstrumento(new Instrumento(
-                        rs.getString("instrumento"),
-                        rs.getString("marca"),
-                        rs.getString("modelo"),
-                        rs.getDouble("precio")
-                ));
-                detalle.setPedido(pedido);
-
-                pedido.getDetallePedidos().add(detalle);
-                pedidos.add(pedido);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            if (conexion != null)
-                conexion.close();
-        }
-
-        return pedidos;
-    }
-
 
 }

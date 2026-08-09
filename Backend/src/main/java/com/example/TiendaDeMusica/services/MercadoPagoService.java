@@ -14,7 +14,6 @@ import com.mercadopago.resources.preference.Preference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class MercadoPagoService {
                         .title(instrumento.getInstrumento())
                         .quantity(itemPedido.cantidad())
                         .currencyId("ARS")
-                        .unitPrice(BigDecimal.valueOf(instrumento.getPrecio()))
+                        .unitPrice(instrumento.getPrecio())
                         .build());
             }
 

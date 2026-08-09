@@ -15,6 +15,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -138,7 +140,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Fender")
                 .modelo("Stratocaster")
                 .imagen("nro1.jpg")
-                .precio(850000)
+                .precio(BigDecimal.valueOf(850000))
                 .costoEnvio("G")
                 .cantidadVendida(15)
                 .descripcion("Guitarra eléctrica ideal para distintos estilos musicales.")
@@ -150,7 +152,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Yamaha")
                 .modelo("F310")
                 .imagen("nro2.jpg")
-                .precio(320000)
+                .precio(BigDecimal.valueOf(320000))
                 .costoEnvio("15000")
                 .cantidadVendida(22)
                 .descripcion("Guitarra acústica de sonido cálido y equilibrado.")
@@ -162,7 +164,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Yamaha")
                 .modelo("YAS-280")
                 .imagen("nro3.jpg")
-                .precio(1200000)
+                .precio(BigDecimal.valueOf(1200000))
                 .costoEnvio("G")
                 .cantidadVendida(8)
                 .descripcion("Saxofón alto de excelente respuesta y afinación.")
@@ -174,7 +176,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Yamaha")
                 .modelo("YFL-222")
                 .imagen("nro4.jpg")
-                .precio(650000)
+                .precio(BigDecimal.valueOf(650000))
                 .costoEnvio("12000")
                 .cantidadVendida(9)
                 .descripcion("Flauta traversa ideal para estudiantes y músicos.")
@@ -186,7 +188,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Pearl")
                 .modelo("Roadshow")
                 .imagen("nro5.jpg")
-                .precio(1100000)
+                .precio(BigDecimal.valueOf(1100000))
                 .costoEnvio("35000")
                 .cantidadVendida(6)
                 .descripcion("Set completo de batería acústica.")
@@ -198,7 +200,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Meinl")
                 .modelo("MCAJ100")
                 .imagen("nro6.jpg")
-                .precio(180000)
+                .precio(BigDecimal.valueOf(180000))
                 .costoEnvio("G")
                 .cantidadVendida(25)
                 .descripcion("Cajón de percusión con excelente respuesta sonora.")
@@ -210,7 +212,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Casio")
                 .modelo("CT-S300")
                 .imagen("nro7.jpg")
-                .precio(480000)
+                .precio(BigDecimal.valueOf(480000))
                 .costoEnvio("G")
                 .cantidadVendida(18)
                 .descripcion("Teclado digital portátil con múltiples sonidos.")
@@ -222,7 +224,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Yamaha")
                 .modelo("P-45")
                 .imagen("nro8.jpg")
-                .precio(950000)
+                .precio(BigDecimal.valueOf(950000))
                 .costoEnvio("25000")
                 .cantidadVendida(10)
                 .descripcion("Piano digital de 88 teclas contrapesadas.")
@@ -234,7 +236,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Korg")
                 .modelo("Minilogue")
                 .imagen("nro9.jpg")
-                .precio(780000)
+                .precio(BigDecimal.valueOf(780000))
                 .costoEnvio("G")
                 .cantidadVendida(5)
                 .descripcion("Sintetizador polifónico para producción musical.")
@@ -246,7 +248,7 @@ public class DataInitializer implements CommandLineRunner {
                 .marca("Roland")
                 .modelo("TD-07")
                 .imagen("nro10.jpg")
-                .precio(1350000)
+                .precio(BigDecimal.valueOf(1350000))
                 .costoEnvio("30000")
                 .cantidadVendida(7)
                 .descripcion("Batería electrónica compacta para práctica y grabación.")
