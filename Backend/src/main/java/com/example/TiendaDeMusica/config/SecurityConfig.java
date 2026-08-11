@@ -52,6 +52,9 @@ public class SecurityConfig {
                         // credenciales; si no se permite, pisa el 403 original con un 401.
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        // Va antes del permitAll del catálogo: este listado incluye los dados
+                        // de baja y es solo para administración.
+                        .requestMatchers(HttpMethod.GET, "/api/instrumentos/todos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/instrumentos/**", "/api/categoria/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/instrumentos/**", "/api/categoria/**").hasRole("ADMIN")

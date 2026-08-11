@@ -21,20 +21,25 @@ const GrillaInstrumentos = () => {
     const [showModal, setShowModal] = useState(false);
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
+    const [verDadosDeBaja, setVerDadosDeBaja] = useState(false);
+
+    const esAdmin = usuarioLogueado?.rol === Roles.ADMIN;
 
     const abrirModal = () => setShowModal(true);
     const cerrarModal = () => setShowModal(false);
 
     const url = import.meta.env.VITE_API_URL;
 
+    const cargarInstrumentos = async () => {
+        const instrumentosData = verDadosDeBaja
+            ? await instrumentoService.getTodos(url + 'instrumentos')
+            : await instrumentoService.getAll(url + 'instrumentos');
+        setInstrumentos(instrumentosData);
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            const instrumentosData = await instrumentoService.getAll(url + 'instrumentos');
-            setInstrumentos(instrumentosData);
-            console.log(instrumentosData);
-        };
-        fetchData();
-    }, []);
+        cargarInstrumentos();
+    }, [verDadosDeBaja]);
 
     useEffect(() => {
         const fetchCategorias = async () => {
@@ -54,7 +59,12 @@ const GrillaInstrumentos = () => {
 
     const deleteInstrumentos = async (idInstrumento: number) => {
         await instrumentoService.delete(url + 'instrumentos', idInstrumento);
-        window.location.reload();
+        await cargarInstrumentos();
+    };
+
+    const reactivarInstrumento = async (idInstrumento: number) => {
+        await instrumentoService.reactivar(url + 'instrumentos', idInstrumento);
+        await cargarInstrumentos();
     };
 
     const generarExcel = async () => {
@@ -77,11 +87,23 @@ const GrillaInstrumentos = () => {
                         <option key={categoria.id} value={categoria.id}>{categoria.denominacion}</option>
                     ))}
                 </select>
-                {usuarioLogueado?.rol === Roles.ADMIN && (
+                {esAdmin && (
                     <>
                         <a className="btn btn-success mb-3" onClick={abrirModal}>Generar Excel</a>
                         <br />
                         <Link className="btn btn-primary" to={`/formulario/0`}>Nuevo Instrumento</Link>
+                        <div className="form-check d-inline-block ms-3">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="chkVerDadosDeBaja"
+                                checked={verDadosDeBaja}
+                                onChange={(e) => setVerDadosDeBaja(e.target.checked)}
+                            />
+                            <label className="form-check-label" htmlFor="chkVerDadosDeBaja">
+                                Ver dados de baja
+                            </label>
+                        </div>
                     </>
                 )}
                 <table className="table table-striped">
@@ -96,8 +118,9 @@ const GrillaInstrumentos = () => {
                             <th>Categoria</th>
                             <th>Costo de Envío</th>
                             <th>Cantidad Vendida</th>
-                            {usuarioLogueado?.rol === Roles.ADMIN && <th></th>}
-                            {usuarioLogueado?.rol === Roles.ADMIN && <th></th>}
+                            {esAdmin && verDadosDeBaja && <th>Estado</th>}
+                            {esAdmin && <th></th>}
+                            {esAdmin && <th></th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -112,7 +135,14 @@ const GrillaInstrumentos = () => {
                                 <td>{instrumento.categoria ? instrumento.categoria.denominacion : "Sin Categoria"}</td>
                                 <td>{instrumento.costoEnvio === "G" ? "Envío gratis" : "$" + instrumento.costoEnvio}</td>
                                 <td>{instrumento.cantidadVendida}</td>
-                                {usuarioLogueado?.rol === Roles.ADMIN && (
+                                {esAdmin && verDadosDeBaja && (
+                                    <td>
+                                        {instrumento.activo
+                                            ? <span className="badge bg-success">Activo</span>
+                                            : <span className="badge bg-secondary">Dado de baja</span>}
+                                    </td>
+                                )}
+                                {esAdmin && (
                                     <>
                                         <td>
                                             <Link to={`/formulario/${instrumento.id}`}>
@@ -120,11 +150,21 @@ const GrillaInstrumentos = () => {
                                             </Link>
                                         </td>
                                         <td>
-                                            <i
-                                                className="bi bi-trash"
-                                                style={{ cursor: "pointer" }}
-                                                onClick={() => deleteInstrumentos(instrumento.id)}
-                                            ></i>
+                                            {instrumento.activo ? (
+                                                <i
+                                                    className="bi bi-trash"
+                                                    title="Dar de baja"
+                                                    style={{ cursor: "pointer" }}
+                                                    onClick={() => deleteInstrumentos(instrumento.id)}
+                                                ></i>
+                                            ) : (
+                                                <i
+                                                    className="bi bi-arrow-counterclockwise"
+                                                    title="Reactivar"
+                                                    style={{ cursor: "pointer" }}
+                                                    onClick={() => reactivarInstrumento(instrumento.id)}
+                                                ></i>
+                                            )}
                                         </td>
                                     </>
                                 )}

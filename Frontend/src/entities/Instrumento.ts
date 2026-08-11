@@ -11,6 +11,7 @@ export default class Instrumento{
     costoEnvio:string = "";
     cantidadVendida:number = 0;
     descripcion:string = "";
+    activo:boolean = true;
     addCarrito?:ChangeEventHandler;
     categoria: Categoria = new Categoria();
 }
