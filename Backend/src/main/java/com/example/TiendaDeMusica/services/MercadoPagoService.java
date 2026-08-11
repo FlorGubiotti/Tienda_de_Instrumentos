@@ -70,6 +70,11 @@ public class MercadoPagoService {
                     .orElseThrow(() -> new IllegalArgumentException(
                             "No existe el instrumento " + itemPedido.instrumentoId()));
 
+            if (!instrumento.isActivo()) {
+                throw new IllegalArgumentException(
+                        "El instrumento " + instrumento.getInstrumento() + " ya no está disponible.");
+            }
+
             if (itemPedido.cantidad() <= 0) {
                 throw new IllegalArgumentException("La cantidad debe ser mayor a 0.");
             }
