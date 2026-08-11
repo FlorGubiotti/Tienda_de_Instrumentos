@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Usuario from "../../entities/Usuario";
+import { cerrarSesion as borrarSesion, obtenerSesion, Sesion } from "../../services/sesion";
 import './Navbar.css'
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const [usuarioLogueado, setUsuarioLogueado] = useState<Usuario | null>(null);
+    const [usuarioLogueado, setUsuarioLogueado] = useState<Sesion | null>(null);
 
     const cerrarSesion = () => {
-        localStorage.removeItem('usuario');
-        setUsuarioLogueado(null); 
+        borrarSesion();
+        setUsuarioLogueado(null);
         navigate('/login', {
             replace: true,
             state: { logged: false },
@@ -17,15 +17,7 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        const jsonUsuario = localStorage.getItem("usuario");
-        if (jsonUsuario) {
-            try {
-                const parsedUsuario = JSON.parse(jsonUsuario) as Usuario;
-                setUsuarioLogueado(parsedUsuario);
-            } catch (error) {
-                console.error("Error parsing user JSON:", error);
-            }
-        }
+        setUsuarioLogueado(obtenerSesion());
     }, []);
 
     return (

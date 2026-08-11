@@ -3,9 +3,9 @@ import { Link, useParams } from "react-router-dom"
 import Instrumento from "../../entities/Instrumento";
 import InstrumentoService from "../../services/InstrumentoService";
 import './DetalleInstrumentos.css';
-import Usuario from "../../entities/Usuario";
 import { Roles } from "../../entities/Roles";
 import { descargarArchivo } from "../../services/descargarArchivo";
+import { obtenerSesion } from "../../services/sesion";
 
 const DetalleInstrumentos = () => {
   const { id } = useParams();
@@ -13,8 +13,7 @@ const DetalleInstrumentos = () => {
   const [detalleInstrumento, setDetalleInstrumento] = useState<Instrumento | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const instrumentoService = new InstrumentoService();
-  const [jsonUsuario] = useState<string | null>(localStorage.getItem('usuario'));
-  const usuarioLogueado: Usuario | null = jsonUsuario ? JSON.parse(jsonUsuario) : null;
+  const [usuarioLogueado] = useState(() => obtenerSesion());
   const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {

@@ -1,7 +1,7 @@
-import { authHeader } from "./BaseService";
+import { fetchConAuth } from "./BaseService";
 
 export async function descargarArchivo(url: string, nombreArchivo: string): Promise<void> {
-  const response = await fetch(url, { headers: { ...authHeader() } });
+  const response = await fetchConAuth(url);
   if (!response.ok) {
     throw new Error("No se pudo descargar el archivo");
   }

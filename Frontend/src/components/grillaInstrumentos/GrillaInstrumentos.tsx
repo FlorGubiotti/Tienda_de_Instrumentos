@@ -4,9 +4,9 @@ import InstrumentoService from "../../services/InstrumentoService";
 import Categoria from "../../entities/Categoria";
 import CategoriaService from "../../services/CategoriaService";
 import { Link } from "react-router-dom";
-import Usuario from "../../entities/Usuario";
 import { Roles } from "../../entities/Roles";
 import { descargarArchivo } from "../../services/descargarArchivo";
+import { obtenerSesion } from "../../services/sesion";
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 import './GrillaInstrumentos.css'
@@ -17,8 +17,7 @@ const GrillaInstrumentos = () => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number | null>(null);
     const categoriaService = new CategoriaService();
-    const [jsonUsuario] = useState<string | null>(localStorage.getItem('usuario'));
-    const usuarioLogueado: Usuario | null = jsonUsuario ? JSON.parse(jsonUsuario) : null;
+    const [usuarioLogueado] = useState(() => obtenerSesion());
     const [showModal, setShowModal] = useState(false);
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');

@@ -1,8 +1,6 @@
-export interface Sesion {
-  token: string;
-  nombreUsuario: string;
-  rol: string;
-}
+import { Sesion } from "./sesion";
+
+export type { Sesion };
 
 export async function login(nombreUsuario: string, clave: string): Promise<Sesion> {
   const url = import.meta.env.VITE_API_URL + "auth/login";

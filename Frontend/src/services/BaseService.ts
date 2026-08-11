@@ -3,19 +3,31 @@
 import PreferenceMP from "../entities/MercadoPago/PreferenceMP";
 import CrearPreferenciaRequest from "../entities/MercadoPago/CrearPreferenciaRequest";
 import { AbstractBaseService } from "./AbstractBaseService";
+import { cerrarSesionYRedirigir, obtenerSesion } from "./sesion";
 
-// Arma el header Authorization a partir del token guardado en el login, si existe
+// Arma el header Authorization a partir de la sesión vigente, si hay una
 export function authHeader(): Record<string, string> {
-  const jsonSesion = localStorage.getItem("usuario");
-  if (!jsonSesion) {
-    return {};
+  const sesion = obtenerSesion();
+  return sesion ? { Authorization: `Bearer ${sesion.token}` } : {};
+}
+
+/**
+ * fetch con el header de autenticación puesto. El backend responde 401 cuando no
+ * hay credenciales válidas (token ausente, vencido o inválido): ahí se cierra la
+ * sesión y se manda al login. El 403 es falta de permisos por rol, con sesión
+ * perfectamente válida, así que no desloguea a nadie.
+ */
+export async function fetchConAuth(path: string, options: RequestInit = {}): Promise<Response> {
+  const response = await fetch(path, {
+    ...options,
+    headers: { ...(options.headers ?? {}), ...authHeader() },
+  });
+
+  if (response.status === 401) {
+    cerrarSesionYRedirigir();
   }
-  try {
-    const { token } = JSON.parse(jsonSesion);
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  } catch {
-    return {};
-  }
+
+  return response;
 }
 
 // Clase abstracta que proporciona métodos genéricos para interactuar con una API
@@ -24,7 +36,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
   protected async request(path: string, options: RequestInit): Promise<T> {
     try {
       // Realiza una solicitud fetch con la ruta y las opciones proporcionadas
-      const response = await fetch(path, options);
+      const response = await fetchConAuth(path, options);
       // Verifica si la respuesta es exitosa
       if (!response.ok) {
         console.log(response.statusText);
@@ -42,7 +54,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
   // Método protegido para realizar una solicitud genérica para obtener todos los elementos
   protected async requestAll(path: string, options: RequestInit): Promise<T[]> {
     try {
-      const response = await fetch(path, options);
+      const response = await fetchConAuth(path, options);
       if (!response.ok) {
         throw new Error(response.statusText);
       }
@@ -59,7 +71,6 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     const path = `${url}/${id}`;
     const options: RequestInit = {
       method: "GET",
-      headers: { ...authHeader() },
     };
     return this.request(path, options);
   }
@@ -69,7 +80,6 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     const path = url;
     const options: RequestInit = {
       method: "GET",
-      headers: { ...authHeader() },
     };
     return this.requestAll(path, options);
   }
@@ -82,7 +92,6 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        ...authHeader(),
       },
       body: JSON.stringify(data),
     };
@@ -98,7 +107,6 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        ...authHeader(),
       },
       body: JSON.stringify(data),
     };
@@ -112,11 +120,10 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        ...authHeader(),
       },
     };
     try {
-      await fetch(path, options);
+      await fetchConAuth(path, options);
     } catch (error) {
       console.error("Error al eliminar el elemento:", error);
       throw new Error("Error al eliminar el elemento");
@@ -125,12 +132,10 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
 
   async saveWithFile(url: string, formData: FormData): Promise<string> {
     try {
-        const options: RequestInit = {
+        const response = await fetchConAuth(url, {
             method: 'POST',
-            headers: { ...authHeader() },
             body: formData
-        };
-        const response = await fetch(url, options);
+        });
 
         if (!response.ok) {
             throw new Error(`Error al guardar la imagen del instrumento: ${response.statusText}`);
@@ -145,11 +150,10 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
   async createPreferenceMP(request: CrearPreferenciaRequest): Promise<PreferenceMP> {
     const urlServer = 'http://localhost:8080/api/mercado_pago/create_preference';
     try {
-      const response = await fetch(urlServer, {
+      const response = await fetchConAuth(urlServer, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...authHeader(),
         },
         body: JSON.stringify(request)
       });

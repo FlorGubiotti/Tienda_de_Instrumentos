@@ -1,13 +1,11 @@
 import { ReactNode, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import Usuario from '../entities/Usuario';
+import { obtenerSesion, Sesion } from '../services/sesion';
 
 export const RutaPrivada = ({ children }: { children: ReactNode }) => {
 
-    const [usuario] = useState<Usuario | null>(() => {
-        const jsonUsuario = localStorage.getItem('usuario');
-        return jsonUsuario ? (JSON.parse(jsonUsuario) as Usuario) : null;
-    });
+    // obtenerSesion descarta la sesión si el token ya venció
+    const [sesion] = useState<Sesion | null>(() => obtenerSesion());
 
-    return usuario ? children : <Navigate to='/login' />;
+    return sesion ? children : <Navigate to='/login' />;
 };

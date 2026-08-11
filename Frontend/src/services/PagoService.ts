@@ -1,4 +1,4 @@
-import { authHeader } from "./BaseService";
+import { fetchConAuth } from "./BaseService";
 
 export interface ConfirmacionPago {
   pedidoId: number;
@@ -12,10 +12,7 @@ export interface ConfirmacionPago {
  */
 export async function confirmarPago(paymentId: string): Promise<ConfirmacionPago> {
   const url = `${import.meta.env.VITE_API_URL}mercado_pago/confirmar/${paymentId}`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { ...authHeader() },
-  });
+  const response = await fetchConAuth(url, { method: "POST" });
 
   if (!response.ok) {
     throw new Error("No se pudo verificar el pago");

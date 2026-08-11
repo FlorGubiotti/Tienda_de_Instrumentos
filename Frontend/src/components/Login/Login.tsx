@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Usuario from "../../entities/Usuario";
 import { login } from "../../services/AuthService";
+import { guardarSesion } from "../../services/sesion";
 import './Login.css';
 import { FaUser, FaLock } from "react-icons/fa";
 
@@ -22,7 +23,7 @@ function Login() {
 
     try {
       const sesion = await login(usuario.nombreUsuario, usuario.clave);
-      localStorage.setItem("usuario", JSON.stringify(sesion));
+      guardarSesion(sesion);
       navigate("/products", {
         replace: true,
         state: {
