@@ -1,4 +1,3 @@
-import { useState } from "react";
 import DetallePedido from "../../entities/DetallePedido";
 import { useCarrito } from "../../hooks/useCarrito";
 import CheckoutMP from "../checkoutMP/CheckoutMP";
@@ -30,30 +29,9 @@ function CartItem({ detalle }: CartItemProps) {
 
 export function Carrito() {
 
-  const { cart, limpiarCarrito, crearPedidoDetalle } = useCarrito()
-  const [idPedido, setIdPedido] = useState<number | null>(null);
-
-  const handleGuardarCarrito = async () => {
-    try {
-      const nuevoIdPedido = await crearPedidoDetalle();
-      setIdPedido(nuevoIdPedido);
-      setTimeout(() => {
-        setIdPedido(null);
-      }, 5000);
-    } catch (error) {
-      console.error('Error al guardar el carrito:', error);
-    }
-  };
-
+  const { cart, limpiarCarrito } = useCarrito()
 
   const totalProductos = cart.reduce((total, detalle) => total + detalle.instrumento.precio * detalle.cantidad, 0);
-  if (idPedido !== null) {
-    return (
-      <div className="text-center text-green m-3">
-        El pedido con id {idPedido} se guardó correctamente!
-      </div>
-    );
-  }
 
   return (
     <>
@@ -85,9 +63,6 @@ export function Carrito() {
               </svg>
             </button>
             <br></br>
-            <button className="btn-guardar" onClick={handleGuardarCarrito}>
-              GUARDAR CARRITO
-            </button>
             <CheckoutMP cart={cart}></CheckoutMP>
           </>
 
