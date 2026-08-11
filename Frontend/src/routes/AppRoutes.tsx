@@ -7,6 +7,8 @@ import Login from "../components/Login/Login";
 import RolUsuario from "../controlAcceso/RolUsuario";
 import { Roles } from "../entities/Roles";
 import ChartsGoogle from "../components/ChartsGoogle/ChartsGoogle";
+import ResultadoPago from "../components/resultadoPago/ResultadoPago";
+import NotFound from "../components/notFound/NotFound";
 
 const AppRoutes = () => {
 
@@ -36,9 +38,14 @@ const AppRoutes = () => {
           
           } />
           <Route element={<RolUsuario rol={Roles.ADMIN}/>}>
-            <Route path="/formulario/:id" element={<Formulario />} /> 
+            <Route path="/formulario/:id" element={<Formulario />} />
             <Route path='/googlecharts' element={<ChartsGoogle />} />
           </Route>
+        {/* URLs de retorno que Mercado Pago usa al volver del checkout */}
+        <Route path="/mpsuccess" element={<ResultadoPago estado="success" />} />
+        <Route path="/mppending" element={<ResultadoPago estado="pending" />} />
+        <Route path="/mpfailure" element={<ResultadoPago estado="failure" />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
 
