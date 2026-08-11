@@ -13,4 +13,5 @@ public class PreferenceMP{
 
     private String id;
     private int statusCode;
+    private Long pedidoId;
 }
