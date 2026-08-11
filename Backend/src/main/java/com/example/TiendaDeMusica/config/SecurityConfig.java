@@ -1,9 +1,11 @@
 package com.example.TiendaDeMusica.config;
 
 import com.example.TiendaDeMusica.security.JwtAuthFilter;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -46,6 +48,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // El reenvío interno a /error vuelve a pasar por la cadena sin
+                        // credenciales; si no se permite, pisa el 403 original con un 401.
+                        .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/instrumentos/**", "/api/categoria/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasRole("ADMIN")
@@ -64,6 +69,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/pedido/**", "/api/detallePedido/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                // Sin esto Spring responde 403 tanto al que no está autenticado como al que
+                // no tiene permisos, y el cliente no puede distinguir "token vencido" de
+                // "no tenés el rol necesario".
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"No autenticado o sesión vencida.\"}");
+                        })
+                        .accessDeniedHandler((request, response, deniedException) -> {
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"No tenés permisos para esta operación.\"}");
+                        }))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
