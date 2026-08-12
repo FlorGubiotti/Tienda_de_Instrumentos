@@ -6,65 +6,142 @@ import './DetalleInstrumentos.css';
 import { Roles } from "../../entities/Roles";
 import { descargarArchivo } from "../../services/descargarArchivo";
 import { obtenerSesion } from "../../services/sesion";
+import { formatearPrecio, nombreCategoria } from "../../services/formato";
+import { useCarrito } from "../../hooks/useCarrito";
+import LoaderPage from "../LoaderPage/LoaderPage";
 
 const DetalleInstrumentos = () => {
   const { id } = useParams();
 
-  const [detalleInstrumento, setDetalleInstrumento] = useState<Instrumento | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const instrumentoService = new InstrumentoService();
+  const [instrumento, setInstrumento] = useState<Instrumento | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(false);
+  const [errorPdf, setErrorPdf] = useState(false);
   const [usuarioLogueado] = useState(() => obtenerSesion());
+  const { cart, addCarrito, removeItemCarrito } = useCarrito();
   const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (id) {
-        const idNumber = parseInt(id);
-        const detalleInstrumentoData = await instrumentoService.get(url + 'instrumentos', idNumber);
-        setDetalleInstrumento(detalleInstrumentoData);
-        setLoading(false);
+    const traerInstrumento = async () => {
+      if (!id) {
+        setError(true);
+        setCargando(false);
+        return;
+      }
+      try {
+        const servicio = new InstrumentoService();
+        setInstrumento(await servicio.get(url + 'instrumentos', parseInt(id)));
+      } catch (e) {
+        // Sin esto, un instrumento inexistente dejaba la pantalla en "Cargando" para siempre
+        console.error('Error al obtener el instrumento:', e);
+        setError(true);
+      } finally {
+        setCargando(false);
       }
     };
-    fetchData();
+    traerInstrumento();
   }, [id]);
 
-  const generarPDF = () => {
-    descargarArchivo(`${url}pedido/downloadPdf/${id}`, "documento.pdf");
+  const generarPDF = async () => {
+    setErrorPdf(false);
+    try {
+      await descargarArchivo(`${url}pedido/downloadPdf/${id}`, "documento.pdf");
+    } catch (e) {
+      console.error('Error al generar el PDF:', e);
+      setErrorPdf(true);
+    }
+  };
+
+  if (cargando) {
+    return <LoaderPage />;
   }
 
-  if (loading) {
-    return <div>Cargando...</div>;
+  if (error || !instrumento) {
+    return (
+      <div className="detalle">
+        <div className="alert alert-danger" role="alert">
+          No encontramos este instrumento.
+        </div>
+        <Link to="/products" className="detalle__volver">← Volver al catálogo</Link>
+      </div>
+    );
   }
+
+  const enCarrito = cart.find((detalle) => detalle.instrumento.id === instrumento.id);
+  const cantidad = enCarrito?.cantidad ?? 0;
+  const envioGratis = instrumento.costoEnvio === 'G';
 
   return (
-    <div className="container">
-      <div className="card custom-card" style={{ maxWidth: '100%' }}>
-        <div className="row g-5">
-          <div className="col-md-6">
-            <img src={'/images/' + detalleInstrumento?.imagen} className="custom-image" alt={detalleInstrumento?.instrumento || 'Detalle del instrumento'} />
-            <div className="col-md-12">
-              <p className="card-text m-3 custom-description word-wrap-break mt-5"><b>Descripcion: <br />{detalleInstrumento?.descripcion}</b></p>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="card-body">
-              <p className="card-text card-vendidos">{detalleInstrumento?.cantidadVendida} vendidos</p>
-              <h2 className="card-title">{detalleInstrumento?.instrumento}</h2>
-              <h5 className="card-subtitle mb-2 text-muted mt-4">Marca: {detalleInstrumento?.marca}</h5>
-              <h5 className="card-subtitle mb-2 text-muted">Modelo: {detalleInstrumento?.modelo}</h5>
-              <p className={`mt-4 card-text ${detalleInstrumento?.costoEnvio === 'G' ? 'text-success' : 'text-warning'}`}>
-                {detalleInstrumento?.costoEnvio === 'G' && <img src={'/images/camion.png'} alt="Envío Gratis" />} {detalleInstrumento?.costoEnvio === 'G' ? 'Envío gratis a todo el país' : `Costo de Envío Interior de Argentina: $${detalleInstrumento?.costoEnvio}`}
-              </p>
-              <div className="row">
-                <div className="col-md-12">
-                  <Link to={`/products`} className="btn btn-primary mt-3">Añadir al carrito</Link>
-                  {usuarioLogueado?.rol === Roles.ADMIN && (
-                  <a className="btn btn-success mt-3 ms-3" onClick={(_e) => generarPDF()}>Generar PDF</a>
-                  )}
-                </div>
+    <div className="detalle">
+      <Link to="/products" className="detalle__volver">← Volver al catálogo</Link>
+
+      <div className="detalle__cuerpo">
+        <div className="detalle__imagen">
+          <img src={`/images/${instrumento.imagen}`} alt={instrumento.instrumento} />
+        </div>
+
+        <div className="detalle__datos">
+          {instrumento.categoria?.denominacion && (
+            <p className="detalle__categoria">{nombreCategoria(instrumento.categoria.denominacion)}</p>
+          )}
+
+          <h1 className="detalle__titulo">{instrumento.instrumento}</h1>
+          <p className="detalle__marca">{instrumento.marca} · {instrumento.modelo}</p>
+
+          <p className="detalle__precio">{formatearPrecio(instrumento.precio)}</p>
+
+          <p className={envioGratis ? 'detalle__envio detalle__envio--gratis' : 'detalle__envio'}>
+            {envioGratis
+              ? <><i className="bi bi-truck" aria-hidden="true"></i> Envío gratis a todo el país</>
+              : `Costo de envío al interior: $${instrumento.costoEnvio}`}
+          </p>
+
+          <p className="detalle__vendidos">{instrumento.cantidadVendida} vendidos</p>
+
+          <div className="detalle__acciones">
+            {cantidad === 0 ? (
+              <button type="button" className="detalle__agregar" onClick={() => addCarrito(instrumento)}>
+                <i className="bi bi-cart-plus" aria-hidden="true"></i> Añadir al carrito
+              </button>
+            ) : (
+              <div className="detalle__cantidad">
+                <button
+                  type="button"
+                  onClick={() => removeItemCarrito(instrumento)}
+                  aria-label={`Quitar una unidad de ${instrumento.instrumento}`}
+                >
+                  −
+                </button>
+                <span>{cantidad} en el carrito</span>
+                <button
+                  type="button"
+                  onClick={() => addCarrito(instrumento)}
+                  aria-label={`Agregar una unidad de ${instrumento.instrumento}`}
+                >
+                  +
+                </button>
               </div>
-            </div>
+            )}
+
+            {usuarioLogueado?.rol === Roles.ADMIN && (
+              <button type="button" className="detalle__pdf" onClick={generarPDF}>
+                <i className="bi bi-file-earmark-pdf" aria-hidden="true"></i> Generar PDF
+              </button>
+            )}
           </div>
+
+          {errorPdf && (
+            <p className="detalle__error-pdf" role="alert">
+              No pudimos generar el PDF. Probá de nuevo más tarde.
+            </p>
+          )}
+
+          {instrumento.descripcion && (
+            <div className="detalle__descripcion">
+              <h2>Descripción</h2>
+              <p>{instrumento.descripcion}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

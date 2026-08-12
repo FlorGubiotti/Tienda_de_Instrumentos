@@ -1,30 +1,191 @@
-.custom-card {
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  width: 100%;
-  display: flex;
+/*
+ * Todo va prefijado con .detalle. Antes este archivo estilaba .btn-primary
+ * suelto, así que le cambiaba el color a ese botón en toda la aplicación.
+ */
+
+.detalle {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--espacio-grande) var(--espacio-medio);
 }
 
-.custom-image {
-  border-radius: 5px;
-  max-width: 100%;
-  height: auto;
-  margin-left: 40%;
+.detalle__volver {
+    display: inline-block;
+    margin-bottom: var(--espacio-grande);
+    color: var(--texto-secundario);
+    text-decoration: none;
+    font-size: 0.9rem;
 }
 
-.btn-primary {
-  color: #ffffff;
-  background-color: #007bff;
-  border-color: #007bff;
+.detalle__volver:hover {
+    color: var(--acento);
 }
 
-.btn-primary:hover {
-  color: #fff;
-  background-color: #105eb2;
-  border-color: #105eb2;
+.detalle__cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+    gap: var(--espacio-grande);
+    align-items: start;
 }
 
-.card-vendidos {
-  font-size: 10px;
+/*
+ * La foto es de 160x160: se muestra a tamaño natural y centrada dentro del
+ * marco. Estirarla para llenar la columna la dejaría borrosa.
+ */
+.detalle__imagen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    background: var(--superficie-hueco);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-tarjeta);
+}
+
+.detalle__imagen img {
+    max-width: 160px;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+.detalle__categoria {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texto-tenue);
+}
+
+.detalle__titulo {
+    margin: var(--espacio-chico) 0 0;
+    font-family: var(--fuente-titulos);
+    font-size: 2rem;
+    color: var(--texto-primario);
+}
+
+.detalle__marca {
+    margin: 0.25rem 0 0;
+    color: var(--texto-secundario);
+}
+
+.detalle__precio {
+    margin: var(--espacio-medio) 0 0;
+    font-size: 2rem;
+    color: var(--texto-primario);
+}
+
+.detalle__envio {
+    margin: var(--espacio-chico) 0 0;
+    color: var(--texto-secundario);
+}
+
+.detalle__envio--gratis {
+    color: var(--color-exito);
+}
+
+.detalle__vendidos {
+    margin: 0.2rem 0 0;
+    color: var(--texto-tenue);
+    font-size: 0.9rem;
+}
+
+.detalle__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-medio);
+    margin-top: var(--espacio-grande);
+}
+
+.detalle__agregar {
+    padding: 0.7rem 1.4rem;
+    background: var(--acento);
+    border: 1px solid var(--acento);
+    border-radius: var(--radio-borde);
+    color: var(--texto-sobre-acento);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.detalle__agregar:hover {
+    background: var(--acento-hover);
+    border-color: var(--acento-hover);
+}
+
+.detalle__cantidad {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-medio);
+    padding: 0.2rem;
+    border: 1px solid var(--acento);
+    border-radius: var(--radio-borde);
+}
+
+.detalle__cantidad button {
+    width: 34px;
+    height: 34px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radio-borde);
+    color: var(--acento);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.detalle__cantidad button:hover {
+    background: var(--superficie-hueco);
+}
+
+.detalle__cantidad span {
+    color: var(--texto-secundario);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.detalle__pdf {
+    padding: 0.7rem 1.4rem;
+    background: transparent;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--radio-borde);
+    color: var(--texto-primario);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.detalle__pdf:hover {
+    border-color: var(--acento);
+    color: var(--acento);
+}
+
+.detalle__error-pdf {
+    margin: var(--espacio-medio) 0 0;
+    color: var(--color-error);
+    font-size: 0.9rem;
+}
+
+.detalle__descripcion {
+    margin-top: var(--espacio-grande);
+    padding-top: var(--espacio-medio);
+    border-top: 1px solid var(--borde);
+}
+
+.detalle__descripcion h2 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.1rem;
+    color: var(--texto-primario);
+    margin: 0 0 var(--espacio-chico);
+}
+
+.detalle__descripcion p {
+    margin: 0;
+    color: var(--texto-secundario);
+    line-height: 1.6;
+    /* Las descripciones cargadas por el admin pueden traer palabras muy largas */
+    overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .detalle__cuerpo {
+        grid-template-columns: 1fr;
+    }
 }
