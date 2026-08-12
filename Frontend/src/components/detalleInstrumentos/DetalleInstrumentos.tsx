@@ -3,9 +3,6 @@ import { Link, useParams } from "react-router-dom"
 import Instrumento from "../../entities/Instrumento";
 import InstrumentoService from "../../services/InstrumentoService";
 import './DetalleInstrumentos.css';
-import { Roles } from "../../entities/Roles";
-import { descargarArchivo } from "../../services/descargarArchivo";
-import { obtenerSesion } from "../../services/sesion";
 import { formatearPrecio, nombreCategoria } from "../../services/formato";
 import { useCarrito } from "../../hooks/useCarrito";
 import LoaderPage from "../LoaderPage/LoaderPage";
@@ -16,8 +13,6 @@ const DetalleInstrumentos = () => {
   const [instrumento, setInstrumento] = useState<Instrumento | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(false);
-  const [errorPdf, setErrorPdf] = useState(false);
-  const [usuarioLogueado] = useState(() => obtenerSesion());
   const { cart, addCarrito, removeItemCarrito } = useCarrito();
   const url = import.meta.env.VITE_API_URL;
 
@@ -41,16 +36,6 @@ const DetalleInstrumentos = () => {
     };
     traerInstrumento();
   }, [id]);
-
-  const generarPDF = async () => {
-    setErrorPdf(false);
-    try {
-      await descargarArchivo(`${url}pedido/downloadPdf/${id}`, "documento.pdf");
-    } catch (e) {
-      console.error('Error al generar el PDF:', e);
-      setErrorPdf(true);
-    }
-  };
 
   if (cargando) {
     return <LoaderPage />;
@@ -122,19 +107,7 @@ const DetalleInstrumentos = () => {
                 </button>
               </div>
             )}
-
-            {usuarioLogueado?.rol === Roles.ADMIN && (
-              <button type="button" className="detalle__pdf" onClick={generarPDF}>
-                <i className="bi bi-file-earmark-pdf" aria-hidden="true"></i> Generar PDF
-              </button>
-            )}
           </div>
-
-          {errorPdf && (
-            <p className="detalle__error-pdf" role="alert">
-              No pudimos generar el PDF. Probá de nuevo más tarde.
-            </p>
-          )}
 
           {instrumento.descripcion && (
             <div className="detalle__descripcion">

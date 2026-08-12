@@ -142,27 +142,6 @@
     white-space: nowrap;
 }
 
-.detalle__pdf {
-    padding: 0.7rem 1.4rem;
-    background: transparent;
-    border: 1px solid var(--borde-fuerte);
-    border-radius: var(--radio-borde);
-    color: var(--texto-primario);
-    font-size: 0.95rem;
-    cursor: pointer;
-}
-
-.detalle__pdf:hover {
-    border-color: var(--acento);
-    color: var(--acento);
-}
-
-.detalle__error-pdf {
-    margin: var(--espacio-medio) 0 0;
-    color: var(--color-error);
-    font-size: 0.9rem;
-}
-
 .detalle__descripcion {
     margin-top: var(--espacio-grande);
     padding-top: var(--espacio-medio);
