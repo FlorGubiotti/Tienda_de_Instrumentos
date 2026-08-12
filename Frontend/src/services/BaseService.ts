@@ -148,7 +148,7 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
   }
 
   async createPreferenceMP(request: CrearPreferenciaRequest): Promise<PreferenceMP> {
-    const urlServer = 'http://localhost:8080/api/mercado_pago/create_preference';
+    const urlServer = `${import.meta.env.VITE_API_URL}mercado_pago/create_preference`;
     try {
       const response = await fetchConAuth(urlServer, {
         method: "POST",

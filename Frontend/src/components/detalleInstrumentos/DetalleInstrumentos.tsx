@@ -29,7 +29,7 @@ const DetalleInstrumentos = () => {
   }, [id]);
 
   const generarPDF = () => {
-    descargarArchivo("http://localhost:8080/api/pedido/downloadPdf/" + id, "documento.pdf");
+    descargarArchivo(`${url}pedido/downloadPdf/${id}`, "documento.pdf");
   }
 
   if (loading) {

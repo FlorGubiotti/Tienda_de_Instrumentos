@@ -69,8 +69,8 @@ const GrillaInstrumentos = () => {
 
     const generarExcel = async () => {
         if (fechaDesde && fechaHasta) {
-            const url = `http://localhost:8080/api/pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
-            await descargarArchivo(url, 'datos.xlsx');
+            const urlExcel = `${url}pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+            await descargarArchivo(urlExcel, 'datos.xlsx');
             cerrarModal();
         } else {
             alert('Por favor ingresa ambas fechas.');

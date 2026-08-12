@@ -38,6 +38,10 @@ public class MercadoPagoService {
     @Value("${mercadopago.access-token}")
     private String accessToken;
 
+    /** URL base del frontend, a donde vuelve el usuario después de pagar. */
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
+
     private final InstrumentoRepository instrumentoRepository;
     private final PedidoRepository pedidoRepository;
 
@@ -105,9 +109,9 @@ public class MercadoPagoService {
             MercadoPagoConfig.setAccessToken(accessToken);
 
             PreferenceBackUrlsRequest backURL = PreferenceBackUrlsRequest.builder()
-                    .success("http://localhost:5173/mpsuccess")
-                    .pending("http://localhost:5173/mppending")
-                    .failure("http://localhost:5173/mpfailure")
+                    .success(frontendUrl + "/mpsuccess")
+                    .pending(frontendUrl + "/mppending")
+                    .failure(frontendUrl + "/mpfailure")
                     .build();
 
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()

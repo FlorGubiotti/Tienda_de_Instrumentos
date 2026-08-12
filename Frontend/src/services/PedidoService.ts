@@ -1,11 +1,12 @@
 import Pedido from "../entities/Pedido";
 import BaseService, { fetchConAuth } from "./BaseService";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default class PedidoService extends BaseService<Pedido>{
 
     async getDatosChartBar() {
-        const urlServer = 'http://localhost:8080/api/pedido/barchart';
-        const response = await fetchConAuth(urlServer, {
+        const response = await fetchConAuth(`${API_URL}pedido/barchart`, {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json',
@@ -15,8 +16,7 @@ export default class PedidoService extends BaseService<Pedido>{
     }
 
     async getDatosChartPie() {
-        const urlServer = 'http://localhost:8080/api/pedido/piechart';
-        const response = await fetchConAuth(urlServer, {
+        const response = await fetchConAuth(`${API_URL}pedido/piechart`, {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json',
@@ -26,7 +26,7 @@ export default class PedidoService extends BaseService<Pedido>{
     }
 
     async generarReporteExcel(fechaDesde: Date, fechaHasta: Date){
-        const urlServer = `http://localhost:8080/api/pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+        const urlServer = `${API_URL}pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
         await fetchConAuth(urlServer, {
             method: 'GET',
             headers: {
