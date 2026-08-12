@@ -1,5 +1,6 @@
 package com.example.TiendaDeMusica.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -56,9 +57,10 @@ public class Instrumento extends BaseEntity{
     @JsonIgnoreProperties("instrumentos")
     private Categoria categoria;
 
-    // Sin cascade: borrar un instrumento nunca debe arrastrarse el historial de ventas
+    // Sin cascade: borrar un instrumento nunca debe arrastrarse el historial de ventas.
+    // No se serializa: el catálogo es público y esto expondría los pedidos.
     @OneToMany(mappedBy = "instrumento", fetch = FetchType.LAZY)
     @Builder.Default //Builder no sobreescribe la inicializacion de la lista
-    @JsonIgnoreProperties("instrumento")
+    @JsonIgnore
     private List<DetallePedido> detallePedidos = new ArrayList<>();
 }

@@ -1,7 +1,7 @@
 package com.example.TiendaDeMusica.entities;
 
 import com.example.TiendaDeMusica.entities.Enum.Categorias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -22,8 +22,10 @@ public class Categoria extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Categorias denominacion;
 
+    // No se serializa: por esta vía se filtraban los pedidos de cada instrumento,
+    // y también los instrumentos dados de baja, salteando el filtro del catálogo.
     @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
     @Builder.Default //Builder no sobreescribe la inicializacion de la lista
-    @JsonIgnoreProperties("categoria")
+    @JsonIgnore
     private List<Instrumento> instrumentos = new ArrayList<>();
 }
