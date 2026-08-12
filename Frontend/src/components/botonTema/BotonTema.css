@@ -1,0 +1,26 @@
+.boton-tema {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--radio-borde);
+    color: var(--texto-primario);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.boton-tema:hover {
+    background: var(--superficie-hueco);
+    border-color: var(--acento);
+    color: var(--acento);
+}
+
+.boton-tema:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+}

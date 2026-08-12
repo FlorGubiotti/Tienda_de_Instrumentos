@@ -1,27 +1,48 @@
+/*
+ * En vez de pisar los colores de Bootstrap con selectores más específicos, se
+ * redefinen sus propias variables: así los estados (hover, activo, colapsado)
+ * siguen funcionando solos y no hay que pelear con la especificidad.
+ */
 .navbar {
-    background-color: #333;
-    /* Color de fondo del navbar */
-    color: #fff;
-    /* Color del texto */
+    --bs-navbar-color: var(--texto-secundario);
+    --bs-navbar-hover-color: var(--acento);
+    --bs-navbar-active-color: var(--acento);
+    --bs-navbar-brand-color: var(--texto-primario);
+    --bs-navbar-brand-hover-color: var(--texto-primario);
+
+    background-color: var(--superficie-barra);
+    border-bottom: 1px solid var(--borde);
 }
 
-.navbar-brand,
-.nav-link {
-    color: #fff;
-    /* Color del texto de los enlaces */
-}
-
-.navbar-nav .nav-link:hover {
-    color: #d4c7c7;
-    /* Color del texto de los enlaces al pasar el mouse */
+.navbar-brand {
+    font-family: var(--fuente-titulos);
+    font-size: 1.35rem;
 }
 
 .navbar-nav .nav-item {
     margin-right: 20px;
-    /* Espacio entre los elementos del navbar */
 }
 
 .navbar-nav.ml-auto {
     margin-left: auto;
-    /* Alinea los elementos a la derecha */
+    align-items: center;
+}
+
+/* Hasta ahora este botón se pintaba con una regla suelta de Login.css */
+.navbar .btn-success {
+    background: var(--acento);
+    border: none;
+    color: var(--texto-sobre-acento);
+}
+
+.navbar .btn-success:hover,
+.navbar .btn-success:focus {
+    background: var(--acento-hover);
+    color: var(--texto-sobre-acento);
+}
+
+.navbar-usuario {
+    color: var(--texto-tenue);
+    font-size: 0.9rem;
+    white-space: nowrap;
 }

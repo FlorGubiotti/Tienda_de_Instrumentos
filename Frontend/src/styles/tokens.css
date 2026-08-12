@@ -1,29 +1,64 @@
 /**
  * Variables compartidas de estilo.
- * Recogen los valores que ya venía usando el proyecto, para tener un solo lugar
- * donde cambiarlos en vez de repetirlos en cada CSS de componente.
+ *
+ * Están en dos capas:
+ *   1. Paleta base (--laton-*): valores literales que no cambian nunca.
+ *   2. Tokens semánticos (--superficie-*, --texto-*, --acento*): dicen para qué
+ *      sirve el color, no cuál es. Son los únicos que deberían usar los CSS de
+ *      componente, porque son los que cambian de valor según el modo.
+ *
+ * El modo claro es el que está en :root. El oscuro se aplica poniendo
+ * data-tema="oscuro" en <html> (ver services/tema.ts).
  */
+
 :root {
-    /* Marca: el violeta que ya se usaba en el degradado del login */
-    --color-marca: rgb(25, 0, 114);
-    --color-marca-medio: rgb(119, 52, 204);
-    --color-marca-claro: rgb(192, 161, 227);
-    --color-marca-suave: rgb(176, 163, 255);
+    /* ---- Paleta base ---- */
 
-    /* Acentos */
-    --color-acento: #007bff;
-    --color-acento-oscuro: #105eb2;
-    --color-exito: #218838;
-    --color-error: #f44336;
+    /*
+     * Latón: el acento de la marca. Hacen falta dos tonos porque el mismo hex no
+     * sirve en los dos modos: #c9962f sobre blanco no llega al contraste mínimo,
+     * y #8a6512 sobre fondo oscuro queda apagado.
+     */
+    --laton-claro: #e0b862;
+    --laton: #c9962f;
+    --laton-oscuro: #8a6512;
+    --laton-mas-oscuro: #6f500c;
 
-    /* Neutros */
-    --color-fondo: #ffffff;
-    --color-borde: #ccc;
-    --color-texto-tenue: #979696;
+    /* ---- Tokens semánticos: modo claro ---- */
 
-    /* Sombras */
-    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.2);
+    --superficie-pagina: #faf8f5;
+    --superficie-barra: #ffffff;
+    --superficie-tarjeta: #ffffff;
+    /* Fondo de los huecos de imagen y de las zonas rebajadas dentro de una tarjeta */
+    --superficie-hueco: #f2ede4;
+
+    --texto-primario: #1a1815;
+    --texto-secundario: #6b6357;
+    /*
+     * Para datos accesorios ("15 vendidos", fechas). No baja más porque tiene
+     * que seguir llegando a 4.5:1 sobre página y tarjeta: es texto chico, no
+     * le corresponde el mínimo relajado de 3:1 del texto grande.
+     */
+    --texto-tenue: #756c5f;
+
+    --borde: #e8e2d8;
+    --borde-fuerte: #d6cdbd;
+
+    --acento: var(--laton-oscuro);
+    --acento-hover: var(--laton-mas-oscuro);
+    /* Color del texto que va encima de un relleno de --acento */
+    --texto-sobre-acento: #ffffff;
+
+    --color-exito: #197245;
+    --color-error: #c62828;
+
+    --sombra-suave: 0 2px 8px rgba(26, 24, 21, 0.08);
+    --sombra-media: 0 4px 12px rgba(26, 24, 21, 0.14);
+
+    /* Le avisa al navegador de qué color son los controles nativos y las barras de scroll */
+    color-scheme: light;
+
+    /* ---- Valores que no dependen del modo ---- */
 
     /* Tipografía (las fuentes se cargan desde index.html) */
     --fuente-titulos: "PT Serif", serif;
@@ -33,4 +68,40 @@
     --espacio-medio: 1rem;
     --espacio-grande: 2rem;
     --radio-borde: 8px;
+    --radio-tarjeta: 12px;
+}
+
+/* ---- Tokens semánticos: modo oscuro ---- */
+
+:root[data-tema="oscuro"] {
+    --superficie-pagina: #1a1815;
+    --superficie-barra: #141210;
+    --superficie-tarjeta: #232019;
+    --superficie-hueco: #2b271e;
+
+    --texto-primario: #f5f2ec;
+    --texto-secundario: #a39a8a;
+    --texto-tenue: #9c9386;
+
+    --borde: #332e25;
+    --borde-fuerte: #443d31;
+
+    --acento: var(--laton);
+    --acento-hover: var(--laton-claro);
+    /* Sobre latón claro el texto va oscuro: el blanco no contrasta lo suficiente */
+    --texto-sobre-acento: #1a1815;
+
+    --color-exito: #5dcaa5;
+    --color-error: #f0918d;
+
+    /* Sobre fondo oscuro una sombra negra no se ve: hay que subirle la opacidad */
+    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.55);
+
+    color-scheme: dark;
+}
+
+body {
+    background-color: var(--superficie-pagina);
+    color: var(--texto-primario);
 }

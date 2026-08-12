@@ -11,5 +11,5 @@
     font-family: var(--fuente-titulos);
     font-weight: 400;
     font-style: italic;
-    color: #272626;
+    color: var(--texto-primario);
 }

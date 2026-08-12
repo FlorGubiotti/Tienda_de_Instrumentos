@@ -1,17 +1,23 @@
+/*
+ * Las reglas van todas dentro de .login-container: al importarse, un CSS de
+ * componente es global, así que sin acotar estaría pisando los botones y los
+ * inputs del resto de la aplicación.
+ */
+
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: var(--color-marca);
-    background: linear-gradient(118deg, var(--color-marca) 31%, var(--color-marca-medio) 100%, var(--color-marca-claro) 100%);
+    background: var(--superficie-pagina);
 }
 
 .login-card {
-    background: var(--color-marca-suave);
+    background: var(--superficie-tarjeta);
+    border: 1px solid var(--borde);
     padding: var(--espacio-grande);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(20, 20, 20, 0.1);
+    border-radius: var(--radio-tarjeta);
+    box-shadow: var(--sombra-media);
     max-width: 450px;
     width: 100%;
 }
@@ -19,30 +25,34 @@
 .login-title {
     text-align: center;
     margin-bottom: 1.5rem;
-    color: #1e1e1e;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-primario);
 }
 
-.input-group-text {
-    background: #15043a;
-    color: white;
+.login-container .input-group-text {
+    background: var(--superficie-hueco);
+    border-color: var(--borde-fuerte);
+    color: var(--texto-secundario);
 }
 
-.form-control:focus {
+.login-container .form-control:focus {
     box-shadow: none;
-    border-color: #979696;
+    border-color: var(--acento);
 }
 
-.btn-success {
-    background: #09033b;
+.login-container .btn-success {
+    background: var(--acento);
     border: none;
+    color: var(--texto-sobre-acento);
 }
 
-.btn-success:hover {
-    background: #21058f;
+.login-container .btn-success:hover {
+    background: var(--acento-hover);
+    color: var(--texto-sobre-acento);
 }
 
-.validation-message {
-    color: rgb(217, 5, 5);
+.login-container .validation-message {
+    color: var(--color-error);
     text-align: center;
     font-size: large;
 }

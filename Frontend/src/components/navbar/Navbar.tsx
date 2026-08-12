@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { cerrarSesion as borrarSesion, obtenerSesion, Sesion } from "../../services/sesion";
+import BotonTema from "../botonTema/BotonTema";
 import './Navbar.css'
 
 const Navbar = () => {
@@ -66,7 +67,10 @@ const Navbar = () => {
                 </ul>
                   <ul className="navbar-nav ml-auto">
                     <li className="nav-item">
-                      <a className="nav-link">Usuario: {usuarioLogueado?.nombreUsuario} - {usuarioLogueado?.rol}</a>
+                      <BotonTema />
+                    </li>
+                    <li className="nav-item">
+                      <span className="navbar-usuario">Usuario: {usuarioLogueado?.nombreUsuario} - {usuarioLogueado?.rol}</span>
                     </li>
                     <li className="nav-item">
                       <button onClick={cerrarSesion} className="btn btn-success" type="button">
