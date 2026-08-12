@@ -1,20 +1,59 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+/*
+ * Todo va acotado a .catalogo. Antes estas reglas eran globales: el selector
+ * suelto `a { color: inherit }` le sacaba el color a los enlaces de cualquier
+ * pantalla apenas se cargaba este componente.
+ */
+
+.catalogo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--espacio-grande) var(--espacio-medio);
 }
 
-.card {
+.catalogo .card {
     margin: 10px;
-    max-width: 300px; /* Ancho máximo de las cards */
-    width: 100%; /* Asegura que las cards ocupen todo el ancho disponible */
+    max-width: 300px;
+    width: 100%;
     padding: 10px;
 }
 
-/* Estilo para eliminar el subrayado azul de los enlaces */
-a {
-    text-decoration: none; /* Elimina el subrayado */
-    color: inherit; /* Hereda el color del texto para los enlaces */
+.catalogo a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ---- Filtros por categoría ---- */
+
+.catalogo__filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-chico);
+    margin-bottom: var(--espacio-grande);
+}
+
+/* Van prefijados con .catalogo para ganarle a `.catalogo a { color: inherit }` */
+.catalogo .filtro {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    color: var(--texto-secundario);
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.catalogo .filtro:hover {
+    border-color: var(--acento);
+    color: var(--acento);
+}
+
+.catalogo .filtro--activo {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: var(--texto-sobre-acento);
+}
+
+.catalogo .filtro--activo:hover {
+    background: var(--acento-hover);
+    border-color: var(--acento-hover);
+    color: var(--texto-sobre-acento);
 }

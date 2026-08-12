@@ -24,11 +24,12 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={
-          <RutaPrivada>
-            <Instrumentos />
-          </RutaPrivada>
-        } />
+        {/*
+          * El catálogo es público: es una tienda, el visitante tiene que poder
+          * mirar los productos sin cuenta. El endpoint del backend ya era
+          * anónimo, esta ruta era la única que lo tapaba.
+          */}
+        <Route path="/products" element={<Instrumentos />} />
         <Route path="/products/detalle/:id" element={<DetalleInstrumentos />} />
         <Route path="/DondeEstamos" element={<DondeEstamos />} />
         <Route path="/grilla" element={

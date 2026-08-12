@@ -1,0 +1,93 @@
+.tarjeta-producto {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--superficie-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-tarjeta);
+    overflow: hidden;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.tarjeta-producto:hover {
+    border-color: var(--acento);
+    transform: translateY(-2px);
+}
+
+/*
+ * Las fotos del catálogo son de 160x160. El marco tiene esa altura y la imagen
+ * se muestra a tamaño natural: si se estirara para llenar el ancho, se vería
+ * borrosa.
+ */
+.tarjeta-producto__imagen {
+    height: 160px;
+    background: var(--superficie-hueco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tarjeta-producto__imagen img {
+    max-width: 160px;
+    max-height: 160px;
+    object-fit: contain;
+}
+
+.tarjeta-producto__cuerpo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--espacio-medio);
+}
+
+.tarjeta-producto__marca {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texto-tenue);
+}
+
+.tarjeta-producto__nombre {
+    margin: 0.15rem 0 0;
+    font-family: var(--fuente-titulos);
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--texto-primario);
+}
+
+.tarjeta-producto__precio {
+    margin: var(--espacio-chico) 0 0;
+    font-size: 1.35rem;
+    color: var(--texto-primario);
+}
+
+.tarjeta-producto__envio,
+.tarjeta-producto__vendidos {
+    margin: 0.2rem 0 0;
+    font-size: 0.85rem;
+    color: var(--texto-tenue);
+}
+
+.tarjeta-producto__envio-gratis {
+    color: var(--color-exito);
+}
+
+.tarjeta-producto__boton {
+    /* margin-top auto alinea el botón abajo aunque los nombres ocupen distinto alto */
+    margin-top: auto;
+    padding-top: var(--espacio-medio);
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: var(--acento);
+    font-size: 0.9rem;
+}
+
+.tarjeta-producto__boton::after {
+    content: " →";
+}
+
+.tarjeta-producto:hover .tarjeta-producto__boton {
+    color: var(--acento-hover);
+}

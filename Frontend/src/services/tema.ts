@@ -15,8 +15,27 @@ const CLAVE_TEMA = 'tema';
  * los dos lados.
  */
 function aplicar(tema: Tema): void {
-  document.documentElement.setAttribute('data-tema', tema);
-  document.documentElement.setAttribute('data-bs-theme', tema === 'oscuro' ? 'dark' : 'light');
+  const raiz = document.documentElement;
+
+  /*
+   * Las transiciones se apagan durante el cambio. Hay dos motivos:
+   *
+   * 1. Sin esto, las propiedades con `transition` (el fondo de los botones,
+   *    por ejemplo) se quedan con el color del modo anterior hasta recargar:
+   *    el navegador no las vuelve a calcular cuando cambia la variable que
+   *    las alimenta.
+   * 2. Aunque funcionara, ver la página entera haciendo un fundido de color
+   *    al alternar el tema queda mal.
+   */
+  raiz.classList.add('sin-transiciones');
+
+  raiz.setAttribute('data-tema', tema);
+  raiz.setAttribute('data-bs-theme', tema === 'oscuro' ? 'dark' : 'light');
+
+  // Fuerza el recálculo con las transiciones ya apagadas, antes de volver a encenderlas
+  void raiz.offsetHeight;
+
+  requestAnimationFrame(() => raiz.classList.remove('sin-transiciones'));
 }
 
 /** Preferencia guardada, o null si el usuario nunca eligió. */

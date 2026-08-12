@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { cerrarSesion as borrarSesion, obtenerSesion, Sesion } from "../../services/sesion";
+import { Roles } from "../../entities/Roles";
 import BotonTema from "../botonTema/BotonTema";
 import './Navbar.css'
 
@@ -21,69 +22,76 @@ const Navbar = () => {
         setUsuarioLogueado(obtenerSesion());
     }, []);
 
+    // Grilla y los gráficos son herramientas de administración: no van en el menú de un visitante
+    const esAdmin = usuarioLogueado?.rol === Roles.ADMIN;
+
     return (
-        <div>
-          <nav className="navbar navbar-expand-lg">
+        <nav className="navbar navbar-expand-lg">
             <div className="container-fluid">
-              <Link className="navbar-brand" to="/">
-                Hendrix
-              </Link>
-              <button
-                className="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-              >
-                <span className="navbar-toggler-icon"></span>
-              </button>
-              <div className="collapse navbar-collapse" id="navbarNav">
-                <ul className="navbar-nav">
-                  <li className="nav-item">
-                    <Link className="nav-link " aria-current="page" to="/">
-                      Home
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/DondeEstamos">
-                      Donde Estamos
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/products">
-                      Productos
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/grilla">
-                      Grilla
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                        <Link className="nav-link" to="/googlecharts">Charts Google</Link>
-                    </li>
-                </ul>
-                  <ul className="navbar-nav ml-auto">
-                    <li className="nav-item">
-                      <BotonTema />
-                    </li>
-                    <li className="nav-item">
-                      <span className="navbar-usuario">Usuario: {usuarioLogueado?.nombreUsuario} - {usuarioLogueado?.rol}</span>
-                    </li>
-                    <li className="nav-item">
-                      <button onClick={cerrarSesion} className="btn btn-success" type="button">
-                        Cerrar Sesión
-                      </button>
-                    </li>
-                  </ul>
-              </div>
+                <Link className="navbar-brand" to="/">
+                    Musical Hendrix
+                </Link>
+                <button
+                    className="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Abrir menú de navegación"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarNav">
+                    <ul className="navbar-nav">
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/">Inicio</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/products">Productos</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/DondeEstamos">Dónde estamos</Link>
+                        </li>
+                        {esAdmin && (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/grilla">Grilla</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/googlecharts">Estadísticas</Link>
+                                </li>
+                            </>
+                        )}
+                    </ul>
+
+                    <ul className="navbar-nav ml-auto">
+                        <li className="nav-item">
+                            <BotonTema />
+                        </li>
+                        {usuarioLogueado ? (
+                            <>
+                                <li className="nav-item">
+                                    <span className="navbar-usuario">
+                                        {usuarioLogueado.nombreUsuario} · {usuarioLogueado.rol}
+                                    </span>
+                                </li>
+                                <li className="nav-item">
+                                    <button onClick={cerrarSesion} className="btn btn-success" type="button">
+                                        Cerrar sesión
+                                    </button>
+                                </li>
+                            </>
+                        ) : (
+                            <li className="nav-item">
+                                <Link className="btn btn-success" to="/login">Ingresar</Link>
+                            </li>
+                        )}
+                    </ul>
+                </div>
             </div>
-          </nav>
-        </div>
-      );
-      
+        </nav>
+    );
 };
 
 export default Navbar;
