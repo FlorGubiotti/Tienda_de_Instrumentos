@@ -48,7 +48,7 @@ public class InstrumentoPrintManager {
             }
             document.add(espacio);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error agregando espacios en blanco al PDF", e);
         }
     }
 
@@ -197,7 +197,9 @@ public class InstrumentoPrintManager {
             document.close();
 
         } catch (DocumentException | IOException e) {
-            e.printStackTrace();
+            // Si no se propaga, el endpoint devuelve un PDF vacío con código 200
+            logger.error("Error generando el PDF del instrumento {}", idInstrumento, e);
+            throw new RuntimeException("No se pudo generar el PDF del instrumento.", e);
         }
     }
 

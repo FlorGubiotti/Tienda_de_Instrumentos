@@ -3,6 +3,8 @@ package com.example.TiendaDeMusica.controllers;
 import com.example.TiendaDeMusica.entities.Pedido;
 import com.example.TiendaDeMusica.services.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import java.util.*;
 @RestController
 @RequestMapping(path = "api/pedido")
 public class PedidoController extends  BaseControllerImpl<Pedido, PedidoServiceImpl>{
+
+    private static final Logger logger = LoggerFactory.getLogger(PedidoController.class);
 
     private final ChartManager chartManager;
     private final PedidoPrintManager pedidoPrintManager;
@@ -75,7 +79,7 @@ public class PedidoController extends  BaseControllerImpl<Pedido, PedidoServiceI
             return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error generando el Excel de pedidos entre {} y {}", fechaDesde, fechaHasta, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -96,7 +100,7 @@ public class PedidoController extends  BaseControllerImpl<Pedido, PedidoServiceI
             return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error generando el PDF del instrumento {}", idInstrumento, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
