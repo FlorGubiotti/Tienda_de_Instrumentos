@@ -1,74 +1,91 @@
 import DetallePedido from "../../entities/DetallePedido";
 import { useCarrito } from "../../hooks/useCarrito";
+import { formatearPrecio } from "../../services/formato";
 import CheckoutMP from "../checkoutMP/CheckoutMP";
 import './Carrito.css'
 
-interface CartItemProps {
-  detalle: DetallePedido;
-}
+function LineaCarrito({ detalle }: { detalle: DetallePedido }) {
+  const { addCarrito, removeItemCarrito, removeCarrito } = useCarrito();
+  const instrumento = detalle.instrumento;
 
-function CartItem({ detalle }: CartItemProps) {
   return (
-    <div key={detalle.id}>
-      <span>
-        <img width={50} height={50}
-          src={`./images/${detalle.instrumento.imagen}`}
-          alt={detalle.instrumento.instrumento}
-        />
-        <div>
-          <strong>{detalle.instrumento.instrumento}</strong> - ${detalle.instrumento.precio}
+    <li className="carrito__linea">
+      <img
+        className="carrito__miniatura"
+        src={`./images/${instrumento.imagen}`}
+        alt={instrumento.instrumento}
+      />
+
+      <div className="carrito__datos">
+        <p className="carrito__nombre">{instrumento.instrumento}</p>
+        <p className="carrito__precio-unitario">{formatearPrecio(instrumento.precio)} c/u</p>
+
+        <div className="carrito__cantidad">
+          <button
+            type="button"
+            onClick={() => removeItemCarrito(instrumento)}
+            aria-label={`Quitar una unidad de ${instrumento.instrumento}`}
+          >
+            −
+          </button>
+          <span aria-label={`${detalle.cantidad} unidades`}>{detalle.cantidad}</span>
+          <button
+            type="button"
+            onClick={() => addCarrito(instrumento)}
+            aria-label={`Agregar una unidad de ${instrumento.instrumento}`}
+          >
+            +
+          </button>
         </div>
-        <div>
-          <b>{detalle.cantidad} {detalle.cantidad == 1 ? 'unidad' : 'unidades'} </b>
-        </div>
-      </span>
-      <hr></hr>
-    </div>
-  )
+      </div>
+
+      <div className="carrito__derecha">
+        <p className="carrito__subtotal">{formatearPrecio(instrumento.precio * detalle.cantidad)}</p>
+        <button
+          type="button"
+          className="carrito__quitar"
+          onClick={() => removeCarrito(instrumento)}
+          aria-label={`Quitar ${instrumento.instrumento} del carrito`}
+        >
+          <i className="bi bi-trash" aria-hidden="true"></i>
+        </button>
+      </div>
+    </li>
+  );
 }
 
 export function Carrito() {
+  const { cart, total, limpiarCarrito } = useCarrito();
 
-  const { cart, limpiarCarrito } = useCarrito()
-
-  const totalProductos = cart.reduce((total, detalle) => total + detalle.instrumento.precio * detalle.cantidad, 0);
+  if (cart.length === 0) {
+    return (
+      <div className="carrito__vacio">
+        <i className="bi bi-cart" aria-hidden="true"></i>
+        <p>Todavía no agregaste nada.</p>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <aside className='cart'>
-        {totalProductos === 0 ? (
-          <p className="text-danger">Sin instrumentos en el carrito.</p>
-        ) : (
-          <>
-            <ul>
-              {cart.map((detalle, index) => (
-                <CartItem
-                  detalle={detalle}
-                  key={index}
-                />
-              ))}
-            </ul>
-            <div>
-              <h3>${totalProductos}</h3>
-            </div>
+    <div className="carrito">
+      <ul className="carrito__lista">
+        {cart.map((detalle) => (
+          <LineaCarrito detalle={detalle} key={detalle.instrumento.id} />
+        ))}
+      </ul>
 
-            <button onClick={limpiarCarrito} title='Limpiar Todo'>
-              <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' strokeWidth='1' stroke='currentColor' fill='none' strokeLinecap='round' strokeLinejoin='round'>
-                <path stroke='none' d='M0 0h24v24H0z' fill='none' />
-                <path d='M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0' />
-                <path d='M17 17a2 2 0 1 0 2 2' />
-                <path d='M17 17h-11v-11' />
-                <path d='M9.239 5.231l10.761 .769l-1 7h-2m-4 0h-7' />
-                <path d='M3 3l18 18' />
-              </svg>
-            </button>
-            <br></br>
-            <CheckoutMP cart={cart}></CheckoutMP>
-          </>
+      <div className="carrito__pie">
+        <div className="carrito__total">
+          <span>Total</span>
+          <strong>{formatearPrecio(total)}</strong>
+        </div>
 
-        )}
+        <CheckoutMP cart={cart} />
 
-      </aside>
-    </>
-  )
+        <button type="button" className="carrito__vaciar" onClick={limpiarCarrito}>
+          Vaciar carrito
+        </button>
+      </div>
+    </div>
+  );
 }

@@ -1,25 +1,28 @@
-/*
- * Todo va acotado a .catalogo. Antes estas reglas eran globales: el selector
- * suelto `a { color: inherit }` le sacaba el color a los enlaces de cualquier
- * pantalla apenas se cargaba este componente.
- */
-
 .catalogo {
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--espacio-grande) var(--espacio-medio);
 }
 
-.catalogo .card {
-    margin: 10px;
-    max-width: 300px;
-    width: 100%;
-    padding: 10px;
+.catalogo__encabezado {
+    display: flex;
+    align-items: baseline;
+    gap: var(--espacio-medio);
+    flex-wrap: wrap;
+    margin-bottom: var(--espacio-medio);
 }
 
-.catalogo a {
-    text-decoration: none;
-    color: inherit;
+.catalogo__titulo {
+    font-family: var(--fuente-titulos);
+    font-size: 1.75rem;
+    color: var(--texto-primario);
+    margin: 0;
+}
+
+.catalogo__cuenta {
+    margin: 0;
+    color: var(--texto-tenue);
+    font-size: 0.9rem;
 }
 
 /* ---- Filtros por categoría ---- */
@@ -31,29 +34,37 @@
     margin-bottom: var(--espacio-grande);
 }
 
-/* Van prefijados con .catalogo para ganarle a `.catalogo a { color: inherit }` */
-.catalogo .filtro {
+.filtro {
     padding: 0.4rem 0.9rem;
     border: 1px solid var(--borde-fuerte);
     border-radius: 999px;
     font-size: 0.9rem;
+    text-decoration: none;
     color: var(--texto-secundario);
     transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
 }
 
-.catalogo .filtro:hover {
+.filtro:hover {
     border-color: var(--acento);
     color: var(--acento);
 }
 
-.catalogo .filtro--activo {
+.filtro--activo {
     background: var(--acento);
     border-color: var(--acento);
     color: var(--texto-sobre-acento);
 }
 
-.catalogo .filtro--activo:hover {
+.filtro--activo:hover {
     background: var(--acento-hover);
     border-color: var(--acento-hover);
     color: var(--texto-sobre-acento);
+}
+
+/* ---- Grilla ---- */
+
+.catalogo__grilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--espacio-medio);
 }

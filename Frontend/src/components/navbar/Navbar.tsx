@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { cerrarSesion as borrarSesion, obtenerSesion, Sesion } from "../../services/sesion";
 import { Roles } from "../../entities/Roles";
+import { useCarrito } from "../../hooks/useCarrito";
+import { Carrito } from "../Carrito/Carrito";
 import BotonTema from "../botonTema/BotonTema";
 import './Navbar.css'
 
 const Navbar = () => {
     const navigate = useNavigate();
     const [usuarioLogueado, setUsuarioLogueado] = useState<Sesion | null>(null);
+    const { cantidadTotal } = useCarrito();
 
     const cerrarSesion = () => {
         borrarSesion();
@@ -26,6 +29,7 @@ const Navbar = () => {
     const esAdmin = usuarioLogueado?.rol === Roles.ADMIN;
 
     return (
+        <>
         <nav className="navbar navbar-expand-lg">
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">
@@ -67,6 +71,27 @@ const Navbar = () => {
 
                     <ul className="navbar-nav ml-auto">
                         <li className="nav-item">
+                            <button
+                                type="button"
+                                className="boton-carrito"
+                                data-bs-toggle="offcanvas"
+                                data-bs-target="#panelCarrito"
+                                aria-controls="panelCarrito"
+                                aria-label={
+                                    cantidadTotal === 0
+                                        ? "Abrir el carrito, está vacío"
+                                        : `Abrir el carrito, ${cantidadTotal} ${cantidadTotal === 1 ? 'unidad' : 'unidades'}`
+                                }
+                            >
+                                <i className="bi bi-cart" aria-hidden="true"></i>
+                                {cantidadTotal > 0 && (
+                                    <span className="boton-carrito__contador" aria-hidden="true">
+                                        {cantidadTotal}
+                                    </span>
+                                )}
+                            </button>
+                        </li>
+                        <li className="nav-item">
                             <BotonTema />
                         </li>
                         {usuarioLogueado ? (
@@ -91,6 +116,18 @@ const Navbar = () => {
                 </div>
             </div>
         </nav>
+
+        {/* El carrito vive en la barra para que esté disponible en cualquier pantalla */}
+        <div className="offcanvas offcanvas-end" tabIndex={-1} id="panelCarrito" aria-labelledby="tituloPanelCarrito">
+            <div className="offcanvas-header">
+                <h2 className="offcanvas-title h5" id="tituloPanelCarrito">Tu carrito</h2>
+                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+            </div>
+            <div className="offcanvas-body">
+                <Carrito />
+            </div>
+        </div>
+        </>
     );
 };
 

@@ -73,10 +73,13 @@
     color: var(--color-exito);
 }
 
-.tarjeta-producto__boton {
-    /* margin-top auto alinea el botón abajo aunque los nombres ocupen distinto alto */
+/* margin-top auto alinea el pie abajo aunque los nombres ocupen distinto alto */
+.tarjeta-producto__pie {
     margin-top: auto;
     padding-top: var(--espacio-medio);
+}
+
+.tarjeta-producto__boton {
     display: block;
     text-align: center;
     text-decoration: none;

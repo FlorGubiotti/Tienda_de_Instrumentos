@@ -46,3 +46,69 @@
     font-size: 0.9rem;
     white-space: nowrap;
 }
+
+/* ---- Carrito ---- */
+
+.boton-carrito {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin-right: var(--espacio-chico);
+    background: transparent;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--radio-borde);
+    color: var(--texto-primario);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.boton-carrito:hover {
+    background: var(--superficie-hueco);
+    border-color: var(--acento);
+    color: var(--acento);
+}
+
+.boton-carrito:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+}
+
+.boton-carrito__contador {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--acento);
+    color: var(--texto-sobre-acento);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+/* Bootstrap pinta el panel con sus propias variables; se las damos las nuestras */
+#panelCarrito {
+    --bs-offcanvas-bg: var(--superficie-tarjeta);
+    --bs-offcanvas-color: var(--texto-primario);
+    --bs-offcanvas-border-color: var(--borde);
+    --bs-offcanvas-width: 420px;
+}
+
+#panelCarrito .offcanvas-header {
+    border-bottom: 1px solid var(--borde);
+}
+
+/* El cuerpo es el que scrollea, para que el total quede fijo abajo */
+#panelCarrito .offcanvas-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}

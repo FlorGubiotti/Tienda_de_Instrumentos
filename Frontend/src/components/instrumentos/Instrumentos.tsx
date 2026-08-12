@@ -5,8 +5,6 @@ import Instrumento from "../../entities/Instrumento";
 import InstrumentoService from "../../services/InstrumentoService";
 import { nombreCategoria } from "../../services/formato";
 import './Instrumentos.css';
-import { CarritoContextProvider } from "../../context/CarritoContext";
-import { Carrito } from "../Carrito/Carrito";
 import ItemInstrumento from "../itemInstrumento/ItemInstrumento";
 import LoaderPage from "../LoaderPage/LoaderPage";
 
@@ -70,65 +68,47 @@ const Instrumentos = () => {
         : instrumentos;
 
     return (
-        <CarritoContextProvider>
-            <div className="catalogo">
-                <div className="catalogo__filtros" role="group" aria-label="Filtrar por categoría">
+        <div className="catalogo">
+            <header className="catalogo__encabezado">
+                <h1 className="catalogo__titulo">
+                    {categoriaElegida ? nombreCategoria(categoriaElegida) : 'Todos los instrumentos'}
+                </h1>
+                <p className="catalogo__cuenta">
+                    {instrumentosVisibles.length}{' '}
+                    {instrumentosVisibles.length === 1 ? 'producto' : 'productos'}
+                </p>
+            </header>
+
+            <div className="catalogo__filtros" role="group" aria-label="Filtrar por categoría">
+                <Link
+                    to="/products"
+                    className={`filtro ${categoriaElegida ? '' : 'filtro--activo'}`}
+                >
+                    Todas
+                </Link>
+                {categorias.map((categoria) => (
                     <Link
-                        to="/products"
-                        className={`filtro ${categoriaElegida ? '' : 'filtro--activo'}`}
+                        key={categoria}
+                        to={`/products?categoria=${encodeURIComponent(categoria)}`}
+                        className={`filtro ${categoriaElegida === categoria ? 'filtro--activo' : ''}`}
                     >
-                        Todas
+                        {nombreCategoria(categoria)}
                     </Link>
-                    {categorias.map((categoria) => (
-                        <Link
-                            key={categoria}
-                            to={`/products?categoria=${encodeURIComponent(categoria)}`}
-                            className={`filtro ${categoriaElegida === categoria ? 'filtro--activo' : ''}`}
-                        >
-                            {nombreCategoria(categoria)}
-                        </Link>
+                ))}
+            </div>
+
+            {instrumentosVisibles.length === 0 ? (
+                <div className="alert alert-info" role="alert">
+                    No hay productos en esta categoría.
+                </div>
+            ) : (
+                <div className="catalogo__grilla">
+                    {instrumentosVisibles.map((instrumento: Instrumento) => (
+                        <ItemInstrumento key={instrumento.id} instrumento={instrumento} />
                     ))}
                 </div>
-
-                {instrumentosVisibles.length === 0 && (
-                    <div className="alert alert-info" role="alert">
-                        No hay productos en esta categoría.
-                    </div>
-                )}
-
-                <div className="row">
-                    <div className="col-9">
-                        <div className="row">
-                            {instrumentosVisibles.map((instrumento: Instrumento, index) => {
-                                return (
-                                    <ItemInstrumento
-                                        instrumentoObject={instrumento}
-                                        key={index}
-                                        id={instrumento.id}
-                                        instrumento={instrumento.instrumento}
-                                        precio={instrumento.precio}
-                                        imagen={instrumento.imagen}
-                                        descripcion={instrumento.descripcion}
-                                        marca={instrumento.marca}
-                                        modelo={instrumento.modelo}
-                                        costoEnvio={instrumento.costoEnvio}
-                                        cantidadVendida={instrumento.cantidadVendida}
-                                        initialHayStock={true}
-                                    >
-                                    </ItemInstrumento>
-
-                                )
-                            })}
-                        </div>
-                    </div>
-                    <div className="col-3">
-                        <b>Carrito Compras</b>
-                        <hr></hr>
-                        <Carrito></Carrito>
-                    </div>
-                </div>
-            </div>
-        </CarritoContextProvider>
+            )}
+        </div>
     )
 
 }

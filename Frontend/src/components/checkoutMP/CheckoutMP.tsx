@@ -9,6 +9,12 @@ interface CheckoutMPProps {
   cart: DetallePedido[];
 }
 
+/*
+ * Va fuera del componente porque solo hace falta una vez: adentro se ejecutaba
+ * en cada render. La clave es la pública de prueba, no es un secreto.
+ */
+initMercadoPago('TEST-73f06669-bf48-44f1-8d81-80799191f2ab', { locale: 'es-AR' });
+
 function CheckoutMP({ cart }: CheckoutMPProps) {
   const [idPreference, setIdPreference] = useState<string>('');
   const preferenceMPService = new PreferenceMPService();
@@ -35,11 +41,9 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
         console.error('Error al crear preferencia de Mercado Pago:', error);
       }
     } else {
-      alert("Agregue al menos un plato al carrito");
+      alert("Agregá al menos un instrumento al carrito");
     }
   };
-
-  initMercadoPago('TEST-73f06669-bf48-44f1-8d81-80799191f2ab', { locale: 'es-AR' });
 
   return (
     <div>

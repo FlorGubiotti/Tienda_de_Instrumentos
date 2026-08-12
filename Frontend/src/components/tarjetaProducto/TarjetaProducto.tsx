@@ -1,15 +1,19 @@
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Instrumento from "../../entities/Instrumento";
 import { formatearPrecio } from "../../services/formato";
 import "./TarjetaProducto.css";
 
-/**
- * Tarjeta de producto de solo lectura: muestra el instrumento y lleva al
- * detalle. No maneja carrito, porque se usa en el Home, que está fuera del
- * CarritoContext. La del catálogo, con los controles de carrito, es
- * ItemInstrumento.
- */
-const TarjetaProducto = ({ instrumento }: { instrumento: Instrumento }) => {
+type Props = {
+    instrumento: Instrumento;
+    /**
+     * Controles opcionales al pie de la tarjeta. El Home la usa sin nada, como
+     * pura vidriera; el catálogo le pasa los botones de carrito.
+     */
+    acciones?: ReactNode;
+};
+
+const TarjetaProducto = ({ instrumento, acciones }: Props) => {
     const envioGratis = instrumento.costoEnvio === "G";
 
     return (
@@ -33,9 +37,12 @@ const TarjetaProducto = ({ instrumento }: { instrumento: Instrumento }) => {
 
                 <p className="tarjeta-producto__vendidos">{instrumento.cantidadVendida} vendidos</p>
 
-                <Link to={`/products/detalle/${instrumento.id}`} className="tarjeta-producto__boton">
-                    Ver detalle
-                </Link>
+                <div className="tarjeta-producto__pie">
+                    <Link to={`/products/detalle/${instrumento.id}`} className="tarjeta-producto__boton">
+                        Ver detalle
+                    </Link>
+                    {acciones}
+                </div>
             </div>
         </article>
     );
