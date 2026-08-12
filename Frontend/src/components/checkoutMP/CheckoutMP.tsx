@@ -26,7 +26,6 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
       try {
         const response = await preferenceMPService.createPreferenceMP(request);
         if (response && response.id) {
-          console.log("Preference id: " + response.id);
           setIdPreference(response.id);
           setMostrarPagoMP(true);
         } else {

@@ -1,0 +1,36 @@
+/**
+ * Variables compartidas de estilo.
+ * Recogen los valores que ya venía usando el proyecto, para tener un solo lugar
+ * donde cambiarlos en vez de repetirlos en cada CSS de componente.
+ */
+:root {
+    /* Marca: el violeta que ya se usaba en el degradado del login */
+    --color-marca: rgb(25, 0, 114);
+    --color-marca-medio: rgb(119, 52, 204);
+    --color-marca-claro: rgb(192, 161, 227);
+    --color-marca-suave: rgb(176, 163, 255);
+
+    /* Acentos */
+    --color-acento: #007bff;
+    --color-acento-oscuro: #105eb2;
+    --color-exito: #218838;
+    --color-error: #f44336;
+
+    /* Neutros */
+    --color-fondo: #ffffff;
+    --color-borde: #ccc;
+    --color-texto-tenue: #979696;
+
+    /* Sombras */
+    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    /* Tipografía (las fuentes se cargan desde index.html) */
+    --fuente-titulos: "PT Serif", serif;
+
+    /* Espaciado y bordes */
+    --espacio-chico: 0.5rem;
+    --espacio-medio: 1rem;
+    --espacio-grande: 2rem;
+    --radio-borde: 8px;
+}

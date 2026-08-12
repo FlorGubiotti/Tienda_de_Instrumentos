@@ -27,13 +27,11 @@ function ChartsGoogle() {
 
     const getBarChart = async () => {
         const datosBackend = await pedidoService.getDatosChartBar();
-        console.log(datosBackend);
         setDatosChartBar(datosBackend);
     }
 
     const getPieChart = async () => {
         const datosBackend = await pedidoService.getDatosChartPie();
-        console.log(datosBackend);
         setDatosChartPie(datosBackend);
     }
 

@@ -8,7 +8,7 @@
 }
 
 .pt-serif-regular-italic {
-    font-family: "PT Serif", serif;
+    font-family: var(--fuente-titulos);
     font-weight: 400;
     font-style: italic;
     color: #272626;

@@ -179,7 +179,7 @@ function Formulario() {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="txtRubro" className="form-label">Cantidad Vendida</label>
+                    <label htmlFor="txtCantidadVendida" className="form-label">Cantidad Vendida</label>
                     <input
                         type="number"
                         id='txtCantidadVendida'

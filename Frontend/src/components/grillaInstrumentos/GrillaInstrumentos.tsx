@@ -45,7 +45,6 @@ const GrillaInstrumentos = () => {
         const fetchCategorias = async () => {
             const categoriasData = await categoriaService.getAll(url + 'categoria');
             setCategorias(categoriasData);
-            console.log(categoriasData);
         };
         fetchCategorias();
     }, []);

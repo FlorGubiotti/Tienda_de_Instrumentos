@@ -39,7 +39,6 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
       const response = await fetchConAuth(path, options);
       // Verifica si la respuesta es exitosa
       if (!response.ok) {
-        console.log(response.statusText);
         // Si no es exitosa, lanza un error con el mensaje de estado de la respuesta
         throw new Error(response.statusText);
       }
@@ -161,7 +160,6 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
         throw new Error(`Error al crear preferencia de Mercado Pago: ${response.statusText}`);
       }
       const responseData = await response.json();
-      console.log('Respuesta de la API:', responseData);
       return responseData as PreferenceMP;
     } catch (error) {
       console.error('Error en createPreferenceMP:', error);
