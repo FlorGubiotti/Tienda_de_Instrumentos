@@ -159,13 +159,32 @@ public class MercadoPagoService {
         }
 
         Long pedidoId = Long.parseLong(payment.getExternalReference());
-        Pedido pedido = pedidoRepository.findById(pedidoId)
+        Pedido pedido = pedidoRepository.findByIdWithDetalle(pedidoId)
                 .orElseThrow(() -> new EntityNotFoundException("No existe el pedido " + pedidoId));
+
+        registrarVentaSiCorresponde(pedido, mapearEstado(payment.getStatus()));
 
         pedido.setEstado(mapearEstado(payment.getStatus()));
         pedidoRepository.save(pedido);
 
         return new ConfirmacionPagoResponse(pedido.getId(), pedido.getEstado().name(), payment.getStatus());
+    }
+
+    /**
+     * Suma las unidades vendidas al instrumento, pero solo cuando el pedido pasa a
+     * PAGADO por primera vez: si se vuelve a consultar el mismo pago (por ejemplo,
+     * recargando la pantalla de resultado) no se cuenta la venta de nuevo.
+     */
+    void registrarVentaSiCorresponde(Pedido pedido, EstadoPedido nuevoEstado) {
+        if (nuevoEstado != EstadoPedido.PAGADO || pedido.getEstado() == EstadoPedido.PAGADO) {
+            return;
+        }
+
+        for (DetallePedido detalle : pedido.getDetallePedidos()) {
+            Instrumento instrumento = detalle.getInstrumento();
+            instrumento.setCantidadVendida(instrumento.getCantidadVendida() + detalle.getCantidad());
+            instrumentoRepository.save(instrumento);
+        }
     }
 
     private EstadoPedido mapearEstado(String estadoPagoMP) {
