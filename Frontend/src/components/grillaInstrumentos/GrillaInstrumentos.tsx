@@ -76,6 +76,15 @@ const GrillaInstrumentos = () => {
         }
     }
 
+    const generarFichaPdf = async (instrumento: Instrumento) => {
+        try {
+            await descargarArchivo(`${url}pedido/downloadPdf/${instrumento.id}`, `${instrumento.instrumento}.pdf`);
+        } catch (e) {
+            console.error('Error al generar la ficha PDF:', e);
+            alert('No se pudo generar el PDF. Probá de nuevo más tarde.');
+        }
+    }
+
     return (
         <>
             <div className="container-xxl text-center">
@@ -120,6 +129,7 @@ const GrillaInstrumentos = () => {
                             {esAdmin && verDadosDeBaja && <th>Estado</th>}
                             {esAdmin && <th></th>}
                             {esAdmin && <th></th>}
+                            {esAdmin && <th></th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -147,6 +157,14 @@ const GrillaInstrumentos = () => {
                                             <Link to={`/formulario/${instrumento.id}`}>
                                                 <i className="bi bi-pencil"></i>
                                             </Link>
+                                        </td>
+                                        <td>
+                                            <i
+                                                className="bi bi-file-earmark-pdf"
+                                                title="Generar ficha en PDF"
+                                                style={{ cursor: "pointer" }}
+                                                onClick={() => generarFichaPdf(instrumento)}
+                                            ></i>
                                         </td>
                                         <td>
                                             {instrumento.activo ? (
