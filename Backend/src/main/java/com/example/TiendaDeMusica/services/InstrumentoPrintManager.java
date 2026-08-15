@@ -87,12 +87,14 @@ public class InstrumentoPrintManager {
             PdfWriter.getInstance(document, outputStream);
             document.open();
 
-            // Encabezado
+            // Encabezado: el nombre de la tienda, sin logo. El logo que había acá
+            // era el de la UTN, resabio de cuando este proyecto era un trabajo
+            // práctico de la facultad; no corresponde en un documento de la tienda.
             logger.info("Agregando encabezado...");
             PdfPTable tableCabecera = new PdfPTable(1);
             tableCabecera.setWidthPercentage(100f);
 
-            Paragraph Header = new Paragraph("", titulo);
+            Paragraph Header = new Paragraph("Musical Hendrix", titulo);
             Header.setAlignment(Paragraph.ALIGN_RIGHT);
             PdfPCell celda = new PdfPCell(Header);
             celda.setBorder(Rectangle.NO_BORDER);
@@ -100,20 +102,6 @@ public class InstrumentoPrintManager {
             tableCabecera.addCell(celda);
 
             document.add(tableCabecera);
-            logger.info("Encabezado agregado");
-
-            Image imgCabeceraRight = Image.getInstance("src/main/resources/static/images/UTN_logo.jpg");
-            imgCabeceraRight.scalePercent(10f);
-            imgCabeceraRight.setBorder(Rectangle.NO_BORDER);
-
-            PdfPCell logoUTN = new PdfPCell(imgCabeceraRight);
-            logoUTN.setBorder(Rectangle.NO_BORDER);
-            logoUTN.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-
-            tableCabecera.addCell(logoUTN);
-
-            document.add(tableCabecera);
-
             logger.info("Encabezado agregado");
 
             addEmptyLine(document, 1);
