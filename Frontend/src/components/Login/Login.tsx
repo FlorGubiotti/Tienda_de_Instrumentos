@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Usuario from "../../entities/Usuario";
 import { login } from "../../services/AuthService";
 import { guardarSesion } from "../../services/sesion";
+import { Roles } from "../../entities/Roles";
 import './Login.css';
 import { FaUser, FaLock } from "react-icons/fa";
 
@@ -24,13 +25,9 @@ function Login() {
     try {
       const sesion = await login(usuario.nombreUsuario, usuario.clave);
       guardarSesion(sesion);
-      navigate("/products", {
-        replace: true,
-        state: {
-          logged: true,
-          usuario: sesion,
-        },
-      });
+      // Quien va a trabajar cae directo en su herramienta; VISOR, que solo mira, va al catálogo
+      const destino = sesion.rol === Roles.VISOR ? "/products" : "/grilla";
+      navigate(destino, { replace: true });
     } catch (error) {
       setTxtValidacion("Usuario o contraseña incorrectos");
     }

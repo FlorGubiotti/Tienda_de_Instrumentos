@@ -58,18 +58,26 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.FORWARD).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         // Va antes del permitAll del catálogo: este listado incluye los dados
-                        // de baja y es solo para administración.
-                        .requestMatchers(HttpMethod.GET, "/api/instrumentos/todos").hasRole("ADMIN")
+                        // de baja. Alcanza con estar logueado (VISOR incluido) para verlos.
+                        .requestMatchers(HttpMethod.GET, "/api/instrumentos/todos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/instrumentos/**", "/api/categoria/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/instrumentos/**", "/api/categoria/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/instrumentos/**", "/api/categoria/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/instrumentos/**", "/api/categoria/**").hasRole("ADMIN")
-                        .requestMatchers(
+                        // Las categorías son estructurales y cambian poco: quedan reservadas a ADMIN.
+                        .requestMatchers(HttpMethod.POST, "/api/categoria/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categoria/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categoria/**").hasRole("ADMIN")
+                        // El catálogo de instrumentos (alta, edición, baja y reactivación) es
+                        // el trabajo diario de OPERADOR, no exclusivo de ADMIN.
+                        .requestMatchers(HttpMethod.POST, "/api/instrumentos/**").hasAnyRole("ADMIN", "OPERADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/instrumentos/**").hasAnyRole("ADMIN", "OPERADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/instrumentos/**").hasAnyRole("ADMIN", "OPERADOR")
+                        // La ficha de un instrumento es parte de ese mismo trabajo diario; los
+                        // reportes de ventas (gráficos, Excel) quedan reservados a ADMIN.
+                        .requestMatchers(HttpMethod.GET, "/api/pedido/downloadPdf/**").hasAnyRole("ADMIN", "OPERADOR")
+                        .requestMatchers(HttpMethod.GET,
                                 "/api/pedido/barchart",
                                 "/api/pedido/piechart",
-                                "/api/pedido/downloadExcel",
-                                "/api/pedido/downloadPdf/**").hasRole("ADMIN")
+                                "/api/pedido/downloadExcel").hasRole("ADMIN")
                         // Ver/editar/borrar pedidos ajenos es cosa de administración; el checkout
                         // de un usuario cualquiera solo necesita poder crear (POST) el suyo.
                         .requestMatchers(HttpMethod.GET, "/api/pedido/**", "/api/detallePedido/**").hasRole("ADMIN")

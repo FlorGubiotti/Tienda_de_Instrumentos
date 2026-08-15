@@ -38,8 +38,12 @@ const AppRoutes = () => {
           </RutaPrivada>
           
           } />
-          <Route element={<RolUsuario rol={Roles.ADMIN}/>}>
+          {/* Alta y edición de instrumentos: el trabajo diario de OPERADOR, no exclusivo de ADMIN */}
+          <Route element={<RolUsuario roles={[Roles.ADMIN, Roles.OPERADOR]}/>}>
             <Route path="/formulario/:id" element={<Formulario />} />
+          </Route>
+          {/* Estadísticas de ventas: reservadas a ADMIN */}
+          <Route element={<RolUsuario roles={[Roles.ADMIN]}/>}>
             <Route path='/googlecharts' element={<ChartsGoogle />} />
           </Route>
         {/* URLs de retorno que Mercado Pago usa al volver del checkout */}

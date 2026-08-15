@@ -23,7 +23,6 @@ const Navbar = () => {
         setUsuarioLogueado(obtenerSesion());
     }, []);
 
-    // Grilla y los gráficos son herramientas de administración: no van en el menú de un visitante
     const esAdmin = usuarioLogueado?.rol === Roles.ADMIN;
 
     return (
@@ -55,15 +54,17 @@ const Navbar = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/DondeEstamos">Dónde estamos</Link>
                         </li>
+                        {/* Grilla: cualquier rol logueado puede entrar a mirar el catálogo completo */}
+                        {usuarioLogueado && (
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/grilla">Grilla</Link>
+                            </li>
+                        )}
+                        {/* Estadísticas de ventas: reservadas a ADMIN */}
                         {esAdmin && (
-                            <>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/grilla">Grilla</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/googlecharts">Estadísticas</Link>
-                                </li>
-                            </>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/googlecharts">Estadísticas</Link>
+                            </li>
                         )}
                     </ul>
 

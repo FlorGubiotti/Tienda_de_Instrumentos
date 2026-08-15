@@ -4,16 +4,16 @@ import { useState } from 'react';
 import { obtenerSesion, Sesion } from '../services/sesion';
 
 interface Props {
-  rol: Roles;
+  /** Cualquiera de estos roles puede entrar. */
+  roles: Roles[];
 }
 
-function RolUsuario({ rol }: Props) {
+function RolUsuario({ roles }: Props) {
 
     // obtenerSesion descarta la sesión si el token ya venció
     const [sesion] = useState<Sesion | null>(() => obtenerSesion());
 
-    //si esta logueado y es administrador lo dejo ingresar si no
-    if (sesion && sesion.rol === rol) {
+    if (sesion && roles.includes(sesion.rol as Roles)) {
         return <Outlet />;
     } else if (sesion) {
         return <Navigate replace to='/grilla' />;
