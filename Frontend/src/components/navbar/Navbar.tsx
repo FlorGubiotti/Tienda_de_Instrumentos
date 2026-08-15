@@ -15,10 +15,8 @@ const Navbar = () => {
     const cerrarSesion = () => {
         borrarSesion();
         setUsuarioLogueado(null);
-        navigate('/login', {
-            replace: true,
-            state: { logged: false },
-        });
+        // Al Home, no al login: es una tienda, no hace falta loguearse para seguir mirando
+        navigate('/', { replace: true });
     };
 
     useEffect(() => {
