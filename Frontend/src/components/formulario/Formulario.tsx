@@ -1,211 +1,271 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Instrumento from '../../entities/Instrumento';
-import InsrtumentoService from '../../services/InstrumentoService';
+import InstrumentoService from '../../services/InstrumentoService';
 import CategoriaService from '../../services/CategoriaService';
 import Categoria from '../../entities/Categoria';
-
+import LoaderPage from '../LoaderPage/LoaderPage';
+import '../../styles/panelAdmin.css'
+import './Formulario.css'
 
 function Formulario() {
     const navigate = useNavigate();
 
     const { id: idInstrumento } = useParams();
+    const esNuevo = idInstrumento === undefined || idInstrumento === '0';
+
     const [instrumento, setInstrumento] = useState<Instrumento>(new Instrumento());
-    const [categorias, setCategorias] = useState<Categoria[]>([]); // Aquí se especifica el tipo explícito
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [txtValidacion, setTxtValidacion] = useState<string>("");
-    const instrumentoService = new InsrtumentoService();
+    const [cargando, setCargando] = useState(!esNuevo);
+    const [error, setError] = useState(false);
+    const instrumentoService = new InstrumentoService();
     const categoriaService = new CategoriaService();
     const url = import.meta.env.VITE_API_URL;
 
-    const getInstrument = async () => {
-        if (idInstrumento !== undefined && idInstrumento !== '0') {
-            const instrumentoId = parseInt(idInstrumento, 10); // Parsea el idInstrumento a número
-            if (!isNaN(instrumentoId)) {
-                const instrumentoSelect = await instrumentoService.get(url + 'instrumentos', instrumentoId);
-                if (instrumentoSelect) {
-                    setInstrumento(instrumentoSelect); // Actualiza el estado con el instrumento seleccionado
-                } else {
-                    setTxtValidacion("No se encontró el instrumento con el ID proporcionado.");
-                }
-            } else {
-                setTxtValidacion("El ID del instrumento no es válido.");
-            }
-        } else {
-            const instrumentoSelect = new Instrumento();
-            setInstrumento(instrumentoSelect); // Actualiza el estado con un nuevo objeto Instrumento
-        }
-
-    };
-    const getCategorias = async () => {
-        try {
-            const categorias = await categoriaService.getAll(url + "categoria");
-            setCategorias(categorias);
-        } catch (error) {
-            console.error("Error al obtener las categorías:", error);
-        }
-    };
+    const actualizar = (cambios: Partial<Instrumento>) =>
+        setInstrumento((previo) => ({ ...previo, ...cambios }));
 
     useEffect(() => {
+        const getCategorias = async () => {
+            try {
+                const categorias = await categoriaService.getAll(url + "categoria");
+                setCategorias(categorias);
+            } catch (e) {
+                console.error("Error al obtener las categorías:", e);
+            }
+        };
+
+        const getInstrument = async () => {
+            if (esNuevo) {
+                setInstrumento(new Instrumento());
+                return;
+            }
+            try {
+                const instrumentoId = parseInt(idInstrumento!, 10);
+                const instrumentoSelect = await instrumentoService.get(url + 'instrumentos', instrumentoId);
+                setInstrumento(instrumentoSelect);
+            } catch (e) {
+                // Sin esto, un instrumento inexistente dejaba el formulario vacío sin avisar
+                console.error('Error al obtener el instrumento:', e);
+                setError(true);
+            } finally {
+                setCargando(false);
+            }
+        };
+
         getCategorias();
         getInstrument();
     }, []);
 
     const save = async () => {
-        if (!instrumento.instrumento || instrumento.instrumento === "") {
-            setTxtValidacion("Ingrese el nombre del instrumento");
+        if (!instrumento.instrumento) {
+            setTxtValidacion("Ingresá el nombre del instrumento");
             return;
         }
-        if (!instrumento.marca || instrumento.marca === "") {
-            setTxtValidacion("Ingrese la marca del instrumento");
+        if (!instrumento.marca) {
+            setTxtValidacion("Ingresá la marca");
             return;
         }
-        if (!instrumento.modelo || instrumento.modelo === "") {
-            setTxtValidacion("Ingrese el modelo del instrumento");
+        if (!instrumento.modelo) {
+            setTxtValidacion("Ingresá el modelo");
             return;
         }
-        if (!instrumento.precio || instrumento.precio === 0) {
+        if (!instrumento.precio) {
             setTxtValidacion("El precio debe ser distinto de cero");
             return;
         }
-        if (!instrumento.imagen || instrumento.imagen === "") {
-            setTxtValidacion("Ingrese el nombre del archivo de imagen");
+        if (!instrumento.imagen) {
+            setTxtValidacion("Ingresá el nombre del archivo de imagen");
             return;
         }
-        if (!instrumento.descripcion || instrumento.descripcion === "") {
-            setTxtValidacion("Ingrese una descripción del instrumento");
+        if (!instrumento.descripcion) {
+            setTxtValidacion("Ingresá una descripción");
             return;
         }
-        if (!instrumento.categoria || instrumento.categoria.denominacion === "") {
-            setTxtValidacion("Ingrese la categoría del instrumento");
+        if (!instrumento.categoria?.id) {
+            setTxtValidacion("Elegí una categoría");
             return;
         }
-
-        // Procesamiento del costo de envío
-        if (instrumento.costoEnvio === "Gratis" || instrumento.costoEnvio === "G") {
-            instrumento.costoEnvio = "G"; // Asigna "G" si el costo de envío es "Gratis"
-        } else if (!isValidCostoEnvio(instrumento.costoEnvio)) {
-            setTxtValidacion("El costo de envío ingresado no es válido. Ingrese 'Gratis' o un número");
+        if (instrumento.costoEnvio !== 'G' && !isValidCostoEnvio(instrumento.costoEnvio)) {
+            setTxtValidacion("El costo de envío tiene que ser un número");
             return;
         }
 
         try {
-            // Guardar el instrumento
             await instrumentoService.post(url + 'instrumentos', instrumento);
             navigate('/grilla');
-        } catch (error) {
-            console.error("Error al guardar el instrumento:", error);
+        } catch (e) {
+            console.error("Error al guardar el instrumento:", e);
+            setTxtValidacion("No se pudo guardar. Probá de nuevo más tarde.");
         }
-
     }
 
-    const isValidCostoEnvio = (costoEnvio: string) => {
-        if (costoEnvio === "Gratis") {
-            return true;
-        } else {
-            const parsedCostoEnvio = parseFloat(costoEnvio);
-            return !isNaN(parsedCostoEnvio);
-        }
-    };
-    
+    const isValidCostoEnvio = (costoEnvio: string) => costoEnvio !== '' && !isNaN(parseFloat(costoEnvio));
+
+    if (cargando) {
+        return <LoaderPage />;
+    }
+
+    if (error) {
+        return (
+            <div className="panel">
+                <div className="alert alert-danger" role="alert">No encontramos este instrumento.</div>
+                <Link to="/grilla" className="panel-boton panel-boton--secundario">Volver a la grilla</Link>
+            </div>
+        );
+    }
+
+    const envioGratis = instrumento.costoEnvio === 'G';
 
     return (
-        <>
-            <div className="center" style={{ margin: '20px' }}>
-                <div className="mb-3">
-                    <label htmlFor="txtInstrumento" className="form-label">Nombre del Instrumento</label>
-                    <input type="text" id='txtInstrumento' className="form-control" placeholder="Ingrese el nombre del instrumento" defaultValue={instrumento?.instrumento} onChange={e => instrumento.instrumento = String(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtMarca" className="form-label">Marca</label>
-                    <input type="text" id='txtMarca' className="form-control" placeholder="Ingrese la marca" defaultValue={instrumento?.marca} onChange={e => instrumento.marca = String(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtPrecio" className="form-label">Precio</label>
-                    <input
-                        type="number"
-                        id='txtPrecio'
-                        className="form-control"
-                        placeholder="Ingrese el precio"
-                        value={instrumento?.precio || ''}
-                        onChange={e => setInstrumento(prevInstrumento => ({
-                            ...prevInstrumento,
-                            precio: Number(e.target.value)
-                        }))}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtRubro" className="form-label">Modelo</label>
-                    <input type="text" id='txtRubro' className="form-control" placeholder="Ingrese el modelo" defaultValue={instrumento?.modelo} onChange={e => instrumento.modelo = String(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtImagen" className="form-label">Imagen</label>
-                    <input type="text" id='txtImagen' className="form-control" placeholder="Nombre del archivo en static/images (ej: nro1.jpg)" defaultValue={instrumento?.imagen} onChange={e => instrumento.imagen = String(e.target.value)} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtDescripcion" className="form-label">Descripción</label>
-                    <textarea id='txtDescripcion' className="form-control" placeholder="Ingrese la descripción" defaultValue={instrumento?.descripcion} onChange={e => instrumento.descripcion = String(e.target.value)}></textarea>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="selectCategoria" className="form-label">Categoría</label>
-                    <select
-                        id='selectCategoria'
-                        className="form-select"
-                        value={instrumento.categoria ? instrumento.categoria.id : ''} // Selecciona el ID de la categoría asociada al instrumento si existe
-                        onChange={(e) => {
-                            const categoriaId = parseInt(e.target.value);
-                            const categoriaSeleccionada = categorias.find(categoria => categoria.id === categoriaId);
-                            if (categoriaSeleccionada) {
-                                setInstrumento({ ...instrumento, categoria: categoriaSeleccionada });
-                            } else {
-                                console.error("No se encontró la categoría seleccionada");
-                            }
-                        }}
-                    >
-                        <option value="">Seleccione una categoría</option>
-                        {categorias.map((categoria) => (
-                            <option key={categoria.id} value={categoria.id}>{categoria.denominacion}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtCostoEnvio" className="form-label">Costo de Envío</label>
-                    <input
-                        type="text"
-                        id='txtCostoEnvio'
-                        className="form-control"
-                        placeholder="Ingrese el costo de envío (Gratis o un número del precio de envío)"
-                        value={instrumento?.costoEnvio === 'G' ? 'Gratis' : instrumento?.costoEnvio}
-                        onChange={e => setInstrumento(prevInstrumento => ({ ...prevInstrumento, costoEnvio: e.target.value }))}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtCantidadVendida" className="form-label">Cantidad Vendida</label>
-                    <input
-                        type="number"
-                        id='txtCantidadVendida'
-                        className="form-control"
-                        placeholder="Ingrese la cantidad vendida"
-                        value={instrumento?.cantidadVendida !== undefined && instrumento?.cantidadVendida !== null && instrumento?.cantidadVendida !== 0 ? instrumento?.cantidadVendida : ''}
-                        onChange={e => setInstrumento(prevInstrumento => ({
-                            ...prevInstrumento,
-                            cantidadVendida: Number(e.target.value)
-                        }))}
-                    />
-
-                </div>
+        <div className="panel">
+            <header className="panel__encabezado">
                 <div>
-                    <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
+                    <h1 className="panel__titulo">{esNuevo ? 'Nuevo instrumento' : 'Editar instrumento'}</h1>
                 </div>
-                <div className="col">
-                    <button onClick={save} className="btn btn-success" type="button">
+                <Link to="/grilla" className="panel-boton panel-boton--secundario">
+                    <i className="bi bi-arrow-left" aria-hidden="true"></i> Volver
+                </Link>
+            </header>
+
+            <div className="formulario">
+                <div className="formulario__campos">
+                    <div className="formulario__campo">
+                        <label htmlFor="txtInstrumento">Nombre del instrumento</label>
+                        <input
+                            type="text"
+                            id="txtInstrumento"
+                            placeholder="Ej: Guitarra Eléctrica"
+                            value={instrumento.instrumento}
+                            onChange={e => actualizar({ instrumento: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="formulario__campo">
+                        <label htmlFor="txtMarca">Marca</label>
+                        <input
+                            type="text"
+                            id="txtMarca"
+                            placeholder="Ej: Fender"
+                            value={instrumento.marca}
+                            onChange={e => actualizar({ marca: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="formulario__campo">
+                        <label htmlFor="txtRubro">Modelo</label>
+                        <input
+                            type="text"
+                            id="txtRubro"
+                            placeholder="Ej: Stratocaster"
+                            value={instrumento.modelo}
+                            onChange={e => actualizar({ modelo: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="formulario__campo">
+                        <label htmlFor="selectCategoria">Categoría</label>
+                        <select
+                            id="selectCategoria"
+                            value={instrumento.categoria?.id ?? ''}
+                            onChange={(e) => {
+                                const categoriaSeleccionada = categorias.find(c => c.id === Number(e.target.value));
+                                if (categoriaSeleccionada) actualizar({ categoria: categoriaSeleccionada });
+                            }}
+                        >
+                            <option value="">Seleccioná una categoría</option>
+                            {categorias.map((categoria) => (
+                                <option key={categoria.id} value={categoria.id}>{categoria.denominacion}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="formulario__campo">
+                        <label htmlFor="txtPrecio">Precio</label>
+                        <input
+                            type="number"
+                            id="txtPrecio"
+                            placeholder="0"
+                            value={instrumento.precio || ''}
+                            onChange={e => actualizar({ precio: Number(e.target.value) })}
+                        />
+                    </div>
+
+                    <div className="formulario__campo">
+                        <label htmlFor="txtCantidadVendida">Cantidad vendida</label>
+                        <input
+                            type="number"
+                            id="txtCantidadVendida"
+                            placeholder="0"
+                            value={instrumento.cantidadVendida || ''}
+                            onChange={e => actualizar({ cantidadVendida: Number(e.target.value) })}
+                        />
+                    </div>
+
+                    <div className="formulario__campo formulario__campo--envio">
+                        <label>Envío</label>
+                        <label className="formulario__checkbox">
+                            <input
+                                type="checkbox"
+                                checked={envioGratis}
+                                onChange={e => actualizar({ costoEnvio: e.target.checked ? 'G' : '' })}
+                            />
+                            Envío gratis a todo el país
+                        </label>
+                        {!envioGratis && (
+                            <input
+                                type="number"
+                                placeholder="Costo de envío al interior"
+                                value={instrumento.costoEnvio === 'G' ? '' : instrumento.costoEnvio}
+                                onChange={e => actualizar({ costoEnvio: e.target.value })}
+                            />
+                        )}
+                    </div>
+
+                    <div className="formulario__campo formulario__campo--imagen">
+                        <label htmlFor="txtImagen">Imagen</label>
+                        <input
+                            type="text"
+                            id="txtImagen"
+                            placeholder="Nombre del archivo en static/images (ej: nro1.jpg)"
+                            value={instrumento.imagen}
+                            onChange={e => actualizar({ imagen: e.target.value })}
+                        />
+                        {instrumento.imagen && (
+                            <img
+                                className="formulario__vista-previa"
+                                src={`/images/${instrumento.imagen}`}
+                                alt=""
+                                onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
+                                onLoad={(e) => (e.currentTarget.style.visibility = 'visible')}
+                            />
+                        )}
+                    </div>
+
+                    <div className="formulario__campo formulario__campo--ancho">
+                        <label htmlFor="txtDescripcion">Descripción</label>
+                        <textarea
+                            id="txtDescripcion"
+                            placeholder="Descripción para la ficha del producto"
+                            value={instrumento.descripcion}
+                            onChange={e => actualizar({ descripcion: e.target.value })}
+                        ></textarea>
+                    </div>
+                </div>
+
+                {txtValidacion && (
+                    <p className="formulario__error" role="alert">{txtValidacion}</p>
+                )}
+
+                <div className="formulario__acciones">
+                    <button onClick={save} type="button" className="panel-boton panel-boton--principal">
                         Guardar
                     </button>
-                    <a href={`/grilla`} style={{ marginLeft: 25 }}>
-                        <button type="button" className="btn btn-warning">Volver</button>
-                    </a>
+                    <Link to="/grilla" className="panel-boton panel-boton--secundario">Cancelar</Link>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
