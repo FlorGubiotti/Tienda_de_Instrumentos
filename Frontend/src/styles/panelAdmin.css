@@ -1,0 +1,137 @@
+/*
+ * Primitivas compartidas por las tres pantallas de administración (grilla,
+ * formulario, estadísticas): encabezado, botones y el modal de react-modal.
+ * Cada pantalla suma su propio CSS solo con lo que le es específico.
+ */
+
+.panel {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--espacio-grande) var(--espacio-medio);
+}
+
+.panel__encabezado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--espacio-medio);
+    flex-wrap: wrap;
+    margin-bottom: var(--espacio-grande);
+}
+
+.panel__titulo {
+    font-family: var(--fuente-titulos);
+    font-size: 1.75rem;
+    color: var(--texto-primario);
+    margin: 0;
+}
+
+.panel__cuenta {
+    margin: 0.2rem 0 0;
+    color: var(--texto-tenue);
+    font-size: 0.9rem;
+}
+
+.panel__acciones {
+    display: flex;
+    gap: var(--espacio-chico);
+    flex-wrap: wrap;
+}
+
+/* ---- Botones ---- */
+
+.panel-boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radio-borde);
+    font-size: 0.9rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.panel-boton--principal {
+    background: var(--acento);
+    border: 1px solid var(--acento);
+    color: var(--texto-sobre-acento);
+}
+
+.panel-boton--principal:hover {
+    background: var(--acento-hover);
+    border-color: var(--acento-hover);
+    color: var(--texto-sobre-acento);
+}
+
+.panel-boton--secundario {
+    background: transparent;
+    border: 1px solid var(--borde-fuerte);
+    color: var(--texto-primario);
+}
+
+.panel-boton--secundario:hover {
+    border-color: var(--acento);
+    color: var(--acento);
+}
+
+/* ---- Modal (react-modal) ---- */
+
+.panel-modal__fondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.panel-modal {
+    width: 90%;
+    max-width: 420px;
+    background: var(--superficie-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-tarjeta);
+    padding: var(--espacio-grande);
+}
+
+.panel-modal__titulo {
+    margin: 0 0 var(--espacio-medio);
+    font-family: var(--fuente-titulos);
+    font-size: 1.2rem;
+    color: var(--texto-primario);
+}
+
+.panel-modal__campo {
+    margin-bottom: var(--espacio-medio);
+}
+
+.panel-modal__campo label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+}
+
+.panel-modal__campo input {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--radio-borde);
+    background: var(--superficie-pagina);
+    color: var(--texto-primario);
+    box-sizing: border-box;
+}
+
+.panel-modal__campo input:focus {
+    outline: none;
+    border-color: var(--acento);
+}
+
+.panel-modal__acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--espacio-chico);
+    margin-top: var(--espacio-grande);
+}
