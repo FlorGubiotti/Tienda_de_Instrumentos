@@ -312,7 +312,7 @@ public class DataInitializer implements CommandLineRunner {
 
         Pedido pedido = Pedido.builder()
                 .fecha(hace(diasAtras))
-                .titulo("Pedido Musical Hendrix")
+                .titulo("Pedido Trémolo")
                 .totalPedido(instrumento.getPrecio().multiply(BigDecimal.valueOf(cantidad)))
                 .estado(EstadoPedido.PAGADO)
                 .build();

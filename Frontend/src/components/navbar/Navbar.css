@@ -15,8 +15,20 @@
 }
 
 .navbar-brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.navbar-brand__marca {
     font-family: var(--fuente-titulos);
     font-size: 1.35rem;
+}
+
+.navbar-brand__bajada {
+    font-size: 0.68rem;
+    color: var(--texto-tenue);
+    letter-spacing: 0.03em;
 }
 
 .navbar-nav .nav-item {

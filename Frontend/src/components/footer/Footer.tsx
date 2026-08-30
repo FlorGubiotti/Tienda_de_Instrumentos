@@ -5,7 +5,7 @@ const Footer = () => (
     <footer className="pie">
         <div className="pie__contenido">
             <div>
-                <p className="pie__marca">Musical Hendrix</p>
+                <p className="pie__marca">Trémolo</p>
                 <p className="pie__texto">
                     Instrumentos musicales con más de 15 años de experiencia.
                 </p>

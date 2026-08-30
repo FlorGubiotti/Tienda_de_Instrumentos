@@ -60,7 +60,7 @@ public class MercadoPagoService {
         Pedido pedido = Pedido.builder()
                 .fecha(new Date())
                 .titulo(request.titulo() == null || request.titulo().isBlank()
-                        ? "Pedido Musical Hendrix"
+                        ? "Pedido Trémolo"
                         : request.titulo())
                 .estado(EstadoPedido.PENDIENTE)
                 .totalPedido(BigDecimal.ZERO)

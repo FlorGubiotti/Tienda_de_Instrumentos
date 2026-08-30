@@ -23,7 +23,7 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
   const getPreferenceMP = async () => {
     if (cart.length > 0) {
       const request = new CrearPreferenciaRequest();
-      request.titulo = 'Pedido Musical Hendrix';
+      request.titulo = 'Pedido Trémolo';
       request.items = cart.map((detalle) => ({
         instrumentoId: detalle.instrumento.id,
         cantidad: detalle.cantidad,

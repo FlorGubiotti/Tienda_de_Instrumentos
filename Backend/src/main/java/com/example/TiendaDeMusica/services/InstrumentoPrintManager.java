@@ -97,7 +97,7 @@ public class InstrumentoPrintManager {
             PdfPTable tableCabecera = new PdfPTable(1);
             tableCabecera.setWidthPercentage(100f);
 
-            Paragraph Header = new Paragraph("Musical Hendrix", titulo);
+            Paragraph Header = new Paragraph("Trémolo", titulo);
             Header.setAlignment(Paragraph.ALIGN_RIGHT);
             PdfPCell celda = new PdfPCell(Header);
             celda.setBorder(Rectangle.NO_BORDER);

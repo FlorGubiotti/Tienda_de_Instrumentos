@@ -30,7 +30,8 @@ const Navbar = () => {
         <nav className="navbar navbar-expand-lg">
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">
-                    Musical Hendrix
+                    <span className="navbar-brand__marca">Trémolo</span>
+                    <span className="navbar-brand__bajada">instrumentos musicales</span>
                 </Link>
                 <button
                     className="navbar-toggler"
