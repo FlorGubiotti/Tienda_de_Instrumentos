@@ -61,6 +61,9 @@ public class SecurityConfig {
                         // de baja. Alcanza con estar logueado (VISOR incluido) para verlos.
                         .requestMatchers(HttpMethod.GET, "/api/instrumentos/todos").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/instrumentos/**", "/api/categoria/**").permitAll()
+                        // Las fotos de producto son parte del catálogo público, igual que los
+                        // datos de los instrumentos.
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasRole("ADMIN")
                         // Las categorías son estructurales y cambian poco: quedan reservadas a ADMIN.
                         .requestMatchers(HttpMethod.POST, "/api/categoria/**").hasRole("ADMIN")

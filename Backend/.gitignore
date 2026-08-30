@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Imágenes subidas desde el formulario, fuera del control de versiones ###
+uploads/
+
 ### STS ###
 .apt_generated
 .classpath

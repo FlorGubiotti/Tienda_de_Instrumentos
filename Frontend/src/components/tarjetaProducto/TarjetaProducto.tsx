@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import Instrumento from "../../entities/Instrumento";
 import { formatearPrecio } from "../../services/formato";
+import { urlImagen } from "../../services/imagenes";
 import "./TarjetaProducto.css";
 
 type Props = {
@@ -19,7 +20,7 @@ const TarjetaProducto = ({ instrumento, acciones }: Props) => {
     return (
         <article className="tarjeta-producto">
             <div className="tarjeta-producto__imagen">
-                <img src={`./images/${instrumento.imagen}`} alt={instrumento.instrumento} loading="lazy" />
+                <img src={urlImagen(instrumento.imagen)} alt={instrumento.instrumento} loading="lazy" />
             </div>
 
             <div className="tarjeta-producto__cuerpo">

@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,6 +37,15 @@ public class GlobalExceptionHandler {
             errores.put(error.getField(), error.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("errores", errores));
+    }
+
+    // Spring la tira antes de que el archivo llegue al controller: la propia
+    // validación de tamaño en ImagenService nunca se ejecuta si el archivo ya
+    // superó este límite de más arriba en la cadena.
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<?> handleArchivoDemasiadoGrande(MaxUploadSizeExceededException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "El archivo es demasiado grande. El máximo es 5 MB."));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

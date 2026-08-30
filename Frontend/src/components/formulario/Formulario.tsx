@@ -5,6 +5,7 @@ import InstrumentoService from '../../services/InstrumentoService';
 import CategoriaService from '../../services/CategoriaService';
 import Categoria from '../../entities/Categoria';
 import LoaderPage from '../LoaderPage/LoaderPage';
+import { urlImagen } from '../../services/imagenes';
 import '../../styles/panelAdmin.css'
 import './Formulario.css'
 
@@ -19,6 +20,11 @@ function Formulario() {
     const [txtValidacion, setTxtValidacion] = useState<string>("");
     const [cargando, setCargando] = useState(!esNuevo);
     const [error, setError] = useState(false);
+    // Archivo recién elegido, todavía no subido: se sube recién al guardar,
+    // así cancelar el formulario no deja imágenes sueltas en el servidor.
+    const [archivoImagen, setArchivoImagen] = useState<File | null>(null);
+    const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
+    const [subiendoImagen, setSubiendoImagen] = useState(false);
     const instrumentoService = new InstrumentoService();
     const categoriaService = new CategoriaService();
     const url = import.meta.env.VITE_API_URL;
@@ -58,6 +64,17 @@ function Formulario() {
         getInstrument();
     }, []);
 
+    // Vista previa instantánea del archivo elegido, sin esperar a que se suba
+    useEffect(() => {
+        if (!archivoImagen) {
+            setVistaPrevia(null);
+            return;
+        }
+        const objectUrl = URL.createObjectURL(archivoImagen);
+        setVistaPrevia(objectUrl);
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [archivoImagen]);
+
     const save = async () => {
         if (!instrumento.instrumento) {
             setTxtValidacion("Ingresá el nombre del instrumento");
@@ -75,8 +92,8 @@ function Formulario() {
             setTxtValidacion("El precio debe ser distinto de cero");
             return;
         }
-        if (!instrumento.imagen) {
-            setTxtValidacion("Ingresá el nombre del archivo de imagen");
+        if (!archivoImagen && !instrumento.imagen) {
+            setTxtValidacion("Elegí una imagen");
             return;
         }
         if (!instrumento.descripcion) {
@@ -92,8 +109,26 @@ function Formulario() {
             return;
         }
 
+        // Mientras no se elija un archivo nuevo, edita conservando la imagen que ya tenía
+        let nombreImagen = instrumento.imagen;
+
+        if (archivoImagen) {
+            setSubiendoImagen(true);
+            const formData = new FormData();
+            formData.append('archivo', archivoImagen);
+            try {
+                nombreImagen = await instrumentoService.saveWithFile(url + 'instrumentos/imagen', formData);
+            } catch (e) {
+                console.error('Error al subir la imagen:', e);
+                setTxtValidacion(e instanceof Error ? e.message : 'No se pudo subir la imagen.');
+                setSubiendoImagen(false);
+                return;
+            }
+            setSubiendoImagen(false);
+        }
+
         try {
-            await instrumentoService.post(url + 'instrumentos', instrumento);
+            await instrumentoService.post(url + 'instrumentos', { ...instrumento, imagen: nombreImagen });
             navigate('/grilla');
         } catch (e) {
             console.error("Error al guardar el instrumento:", e);
@@ -117,6 +152,8 @@ function Formulario() {
     }
 
     const envioGratis = instrumento.costoEnvio === 'G';
+    // La vista previa del archivo recién elegido tiene prioridad sobre la imagen ya guardada
+    const srcVistaPrevia = vistaPrevia ?? (instrumento.imagen ? urlImagen(instrumento.imagen) : null);
 
     return (
         <div className="panel">
@@ -226,20 +263,13 @@ function Formulario() {
                     <div className="formulario__campo formulario__campo--imagen">
                         <label htmlFor="txtImagen">Imagen</label>
                         <input
-                            type="text"
+                            type="file"
                             id="txtImagen"
-                            placeholder="Nombre del archivo en static/images (ej: nro1.jpg)"
-                            value={instrumento.imagen}
-                            onChange={e => actualizar({ imagen: e.target.value })}
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            onChange={e => setArchivoImagen(e.target.files?.[0] ?? null)}
                         />
-                        {instrumento.imagen && (
-                            <img
-                                className="formulario__vista-previa"
-                                src={`/images/${instrumento.imagen}`}
-                                alt=""
-                                onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
-                                onLoad={(e) => (e.currentTarget.style.visibility = 'visible')}
-                            />
+                        {srcVistaPrevia && (
+                            <img className="formulario__vista-previa" src={srcVistaPrevia} alt="" />
                         )}
                     </div>
 
@@ -259,8 +289,8 @@ function Formulario() {
                 )}
 
                 <div className="formulario__acciones">
-                    <button onClick={save} type="button" className="panel-boton panel-boton--principal">
-                        Guardar
+                    <button onClick={save} type="button" className="panel-boton panel-boton--principal" disabled={subiendoImagen}>
+                        {subiendoImagen ? 'Subiendo imagen…' : 'Guardar'}
                     </button>
                     <Link to="/grilla" className="panel-boton panel-boton--secundario">Cancelar</Link>
                 </div>

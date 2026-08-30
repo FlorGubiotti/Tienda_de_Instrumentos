@@ -129,21 +129,22 @@ export default abstract class BaseService<T> extends AbstractBaseService<T> {
     }
   }
 
+  /** Devuelve el nombre de archivo que generó el backend, listo para guardarse en Instrumento.imagen. */
   async saveWithFile(url: string, formData: FormData): Promise<string> {
-    try {
-        const response = await fetchConAuth(url, {
-            method: 'POST',
-            body: formData
-        });
+    // Sin Content-Type explícito: fetch arma el multipart/form-data con el boundary
+    // correcto solo si no se lo pisa a mano.
+    const response = await fetchConAuth(url, {
+      method: 'POST',
+      body: formData,
+    });
 
-        if (!response.ok) {
-            throw new Error(`Error al guardar la imagen del instrumento: ${response.statusText}`);
-        }
-
-        return response.text(); // Devuelve la respuesta del servidor
-    } catch (error) {
-        throw new Error(`Error al guardar la imagen del instrumento`);
+    if (!response.ok) {
+      const cuerpo = await response.json().catch(() => null);
+      throw new Error(cuerpo?.error ?? 'No se pudo subir la imagen.');
     }
+
+    const { imagen } = await response.json();
+    return imagen;
   }
 
   async createPreferenceMP(request: CrearPreferenciaRequest): Promise<PreferenceMP> {

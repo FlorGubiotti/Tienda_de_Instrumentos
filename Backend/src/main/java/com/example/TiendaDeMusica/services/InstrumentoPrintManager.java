@@ -17,14 +17,17 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Service
 public class InstrumentoPrintManager {
 
     private final InstrumentoRepository instrumentoRepository;
+    private final ImagenService imagenService;
 
-    public InstrumentoPrintManager(InstrumentoRepository instrumentoRepository) {
+    public InstrumentoPrintManager(InstrumentoRepository instrumentoRepository, ImagenService imagenService) {
         this.instrumentoRepository = instrumentoRepository;
+        this.imagenService = imagenService;
     }
 
     protected static Font titulo = new Font(Font.HELVETICA, 18, Font.BOLD);
@@ -119,7 +122,7 @@ public class InstrumentoPrintManager {
             leftColumn.setWidthPercentage(100);
 
             // Agregar imagen
-            Image imgInstrumento = Image.getInstance("src/main/resources/static/images/" + instrumento.getImagen());
+            Image imgInstrumento = Image.getInstance(rutaDeImagen(instrumento.getImagen()));
             imgInstrumento.scaleAbsolute(150f, 150f);
             imgInstrumento.setAlignment(Image.ALIGN_CENTER);
 
@@ -194,6 +197,18 @@ public class InstrumentoPrintManager {
     public Instrumento getInstrumentoById(long idInstrumento) {
         return instrumentoRepository.findById(idInstrumento)
                 .orElseThrow(() -> new EntityNotFoundException("No existe el instrumento " + idInstrumento));
+    }
+
+    /**
+     * Una imagen puede venir de la carpeta de subidas (instrumentos cargados
+     * desde el formulario) o de las diez semillas del proyecto, que solo
+     * existen en el código fuente. Se prueba la carpeta de subidas primero.
+     */
+    private String rutaDeImagen(String nombreArchivo) {
+        Path rutaSubida = imagenService.resolverRutaSiExiste(nombreArchivo);
+        return rutaSubida != null
+                ? rutaSubida.toString()
+                : "src/main/resources/static/images/" + nombreArchivo;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(InstrumentoPrintManager.class);

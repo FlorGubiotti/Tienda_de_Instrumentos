@@ -8,6 +8,7 @@ import { Roles } from "../../entities/Roles";
 import { descargarArchivo } from "../../services/descargarArchivo";
 import { obtenerSesion } from "../../services/sesion";
 import { formatearPrecio, nombreCategoria } from "../../services/formato";
+import { urlImagen } from "../../services/imagenes";
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 import '../../styles/panelAdmin.css'
@@ -167,7 +168,7 @@ const GrillaInstrumentos = () => {
                                 <td>
                                     <img
                                         className="panel__miniatura"
-                                        src={`./images/${instrumento.imagen}`}
+                                        src={urlImagen(instrumento.imagen)}
                                         alt={instrumento.instrumento}
                                     />
                                 </td>

@@ -1,6 +1,7 @@
 import DetallePedido from "../../entities/DetallePedido";
 import { useCarrito } from "../../hooks/useCarrito";
 import { formatearPrecio } from "../../services/formato";
+import { urlImagen } from "../../services/imagenes";
 import CheckoutMP from "../checkoutMP/CheckoutMP";
 import './Carrito.css'
 
@@ -12,7 +13,7 @@ function LineaCarrito({ detalle }: { detalle: DetallePedido }) {
     <li className="carrito__linea">
       <img
         className="carrito__miniatura"
-        src={`./images/${instrumento.imagen}`}
+        src={urlImagen(instrumento.imagen)}
         alt={instrumento.instrumento}
       />
 

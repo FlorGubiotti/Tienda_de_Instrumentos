@@ -4,6 +4,7 @@ import Instrumento from "../../entities/Instrumento";
 import InstrumentoService from "../../services/InstrumentoService";
 import './DetalleInstrumentos.css';
 import { formatearPrecio, nombreCategoria } from "../../services/formato";
+import { urlImagen } from "../../services/imagenes";
 import { useCarrito } from "../../hooks/useCarrito";
 import LoaderPage from "../LoaderPage/LoaderPage";
 
@@ -62,7 +63,7 @@ const DetalleInstrumentos = () => {
 
       <div className="detalle__cuerpo">
         <div className="detalle__imagen">
-          <img src={`/images/${instrumento.imagen}`} alt={instrumento.instrumento} />
+          <img src={urlImagen(instrumento.imagen)} alt={instrumento.instrumento} />
         </div>
 
         <div className="detalle__datos">

@@ -67,21 +67,19 @@
 
 /* ---- Imagen ---- */
 
-.formulario__campo--imagen {
-    position: relative;
+.formulario__campo--imagen input[type="file"] {
+    padding: 0.4rem;
+    cursor: pointer;
 }
 
 .formulario__vista-previa {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 44px;
-    height: 44px;
+    align-self: flex-start;
+    width: 96px;
+    height: 96px;
     object-fit: contain;
     background: var(--superficie-hueco);
+    border: 1px solid var(--borde);
     border-radius: var(--radio-borde);
-    /* Arranca oculta: si el nombre de archivo no existe, onError nunca la muestra */
-    visibility: hidden;
 }
 
 /* ---- Validación y acciones ---- */

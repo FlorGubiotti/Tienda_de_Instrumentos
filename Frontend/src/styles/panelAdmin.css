@@ -52,6 +52,11 @@
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
+.panel-boton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .panel-boton--principal {
     background: var(--acento);
     border: 1px solid var(--acento);
