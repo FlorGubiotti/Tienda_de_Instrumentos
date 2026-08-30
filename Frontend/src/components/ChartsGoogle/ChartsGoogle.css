@@ -1,0 +1,50 @@
+.estadisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--espacio-medio);
+}
+
+.estadisticas__tarjeta {
+    background: var(--superficie-tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-tarjeta);
+    padding: var(--espacio-medio);
+}
+
+.estadisticas__titulo {
+    margin: 0 0 var(--espacio-chico);
+    font-family: var(--fuente-titulos);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--texto-primario);
+}
+
+/*
+ * Reemplaza a la leyenda propia de Google Charts: esa pinta un rectángulo
+ * blanco fijo detrás del texto de cada ítem, sin ninguna opción para
+ * cambiarlo, así que en modo oscuro quedaba un parche blanco fijo.
+ */
+.estadisticas__leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.estadisticas__leyenda li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
+}
+
+.estadisticas__leyenda-punto {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
