@@ -1,12 +1,16 @@
 package com.example.TiendaDeMusica.config;
 
 import com.example.TiendaDeMusica.entities.Categoria;
+import com.example.TiendaDeMusica.entities.DetallePedido;
 import com.example.TiendaDeMusica.entities.Instrumento;
+import com.example.TiendaDeMusica.entities.Pedido;
 import com.example.TiendaDeMusica.entities.Usuario;
 import com.example.TiendaDeMusica.entities.Enum.Categorias;
+import com.example.TiendaDeMusica.entities.Enum.EstadoPedido;
 import com.example.TiendaDeMusica.entities.Enum.Rol;
 import com.example.TiendaDeMusica.repositories.CategoriaRepository;
 import com.example.TiendaDeMusica.repositories.InstrumentoRepository;
+import com.example.TiendaDeMusica.repositories.PedidoRepository;
 import com.example.TiendaDeMusica.repositories.UsuarioRepository;
 
 import org.slf4j.Logger;
@@ -16,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -26,17 +32,20 @@ public class DataInitializer implements CommandLineRunner {
     private final CategoriaRepository categoriaRepository;
     private final UsuarioRepository usuarioRepository;
     private final InstrumentoRepository instrumentoRepository;
+    private final PedidoRepository pedidoRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(
             CategoriaRepository categoriaRepository,
             UsuarioRepository usuarioRepository,
             InstrumentoRepository instrumentoRepository,
+            PedidoRepository pedidoRepository,
             PasswordEncoder passwordEncoder) {
 
         this.categoriaRepository = categoriaRepository;
         this.usuarioRepository = usuarioRepository;
         this.instrumentoRepository = instrumentoRepository;
+        this.pedidoRepository = pedidoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -48,6 +57,7 @@ public class DataInitializer implements CommandLineRunner {
         cargarCategorias();
         cargarUsuarios();
         cargarInstrumentos();
+        cargarPedidos();
 
         logger.info("Carga inicial finalizada.");
     }
@@ -267,6 +277,73 @@ public class DataInitializer implements CommandLineRunner {
         instrumentoRepository.save(instrumento10);
 
         logger.info("Instrumentos creados.");
+    }
+
+    /*
+     * cantidadVendida en cargarInstrumentos() es solo un número de vidriera:
+     * sin esto, no hay un solo Pedido/DetallePedido real detrás de esas
+     * cifras, así que el reporte de Excel (que sí consulta pedidos reales)
+     * nunca las muestra. Un pedido PAGADO por instrumento, con la misma
+     * cantidad, para que el catálogo y el reporte cuenten la misma historia.
+     */
+    private void cargarPedidos() {
+
+        if (pedidoRepository.count() > 0) {
+            logger.info("Los pedidos ya existen.");
+            return;
+        }
+
+        crearPedidoVendido("Fender", "Stratocaster", 15, 170);
+        crearPedidoVendido("Yamaha", "F310", 22, 150);
+        crearPedidoVendido("Yamaha", "YAS-280", 8, 130);
+        crearPedidoVendido("Yamaha", "YFL-222", 9, 110);
+        crearPedidoVendido("Pearl", "Roadshow", 6, 95);
+        crearPedidoVendido("Meinl", "MCAJ100", 25, 80);
+        crearPedidoVendido("Casio", "CT-S300", 18, 60);
+        crearPedidoVendido("Yamaha", "P-45", 10, 40);
+        crearPedidoVendido("Korg", "Minilogue", 5, 20);
+        crearPedidoVendido("Roland", "TD-07", 7, 5);
+
+        logger.info("Pedidos creados.");
+    }
+
+    private void crearPedidoVendido(String marca, String modelo, int cantidad, int diasAtras) {
+        Instrumento instrumento = obtenerInstrumento(marca, modelo);
+
+        Pedido pedido = Pedido.builder()
+                .fecha(hace(diasAtras))
+                .titulo("Pedido Musical Hendrix")
+                .totalPedido(instrumento.getPrecio().multiply(BigDecimal.valueOf(cantidad)))
+                .estado(EstadoPedido.PAGADO)
+                .build();
+
+        DetallePedido detalle = DetallePedido.builder()
+                .cantidad(cantidad)
+                .instrumento(instrumento)
+                .pedido(pedido) // lado dueño de la relación: sin esto el FK queda null
+                .build();
+
+        pedido.getDetallePedidos().add(detalle);
+        pedidoRepository.save(pedido); // cascade ALL persiste el detalle también
+    }
+
+    private Instrumento obtenerInstrumento(String marca, String modelo) {
+        return instrumentoRepository.findAll()
+                .stream()
+                .filter(instrumento ->
+                        instrumento.getMarca().equals(marca) && instrumento.getModelo().equals(modelo))
+                .findFirst()
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "No se encontró el instrumento " + marca + " " + modelo
+                        )
+                );
+    }
+
+    private Date hace(int dias) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -dias);
+        return calendar.getTime();
     }
 
     private Categoria obtenerCategoria(Categorias denominacion) {
