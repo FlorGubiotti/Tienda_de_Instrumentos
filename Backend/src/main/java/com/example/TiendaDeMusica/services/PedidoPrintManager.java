@@ -1,6 +1,7 @@
 package com.example.TiendaDeMusica.services;
 
 import com.example.TiendaDeMusica.entities.DetallePedido;
+import com.example.TiendaDeMusica.entities.Enum.EstadoPedido;
 import com.example.TiendaDeMusica.entities.Pedido;
 import com.example.TiendaDeMusica.repositories.PedidoRepository;
 import java.math.BigDecimal;
@@ -111,7 +112,11 @@ public class PedidoPrintManager {
         cal.add(Calendar.DATE, 1);
         Date fechaHastaIncrementada = cal.getTime();
 
-        return pedidoRepository.findByFechaBetweenWithDetalle(fechaDesde, fechaHastaIncrementada);
+        // Solo pedidos PAGADO: uno PENDIENTE es un carrito que nunca terminó de
+        // pagarse, y contarlo como venta infla el reporte con dinero que
+        // nunca se cobró.
+        return pedidoRepository.findByFechaBetweenAndEstadoWithDetalle(
+                fechaDesde, fechaHastaIncrementada, EstadoPedido.PAGADO);
     }
 
 }
