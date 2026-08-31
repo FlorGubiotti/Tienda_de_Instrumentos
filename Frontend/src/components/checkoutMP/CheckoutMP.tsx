@@ -13,7 +13,7 @@ interface CheckoutMPProps {
  * Va fuera del componente porque solo hace falta una vez: adentro se ejecutaba
  * en cada render. La clave es la pública de prueba, no es un secreto.
  */
-initMercadoPago('TEST-73f06669-bf48-44f1-8d81-80799191f2ab', { locale: 'es-AR' });
+initMercadoPago('APP_USR-f3dc20ff-ecb9-4fd8-90a4-3f4f31453a40', { locale: 'es-AR' });
 
 function CheckoutMP({ cart }: CheckoutMPProps) {
   const [idPreference, setIdPreference] = useState<string>('');
