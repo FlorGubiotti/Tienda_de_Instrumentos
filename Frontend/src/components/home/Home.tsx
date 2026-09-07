@@ -4,21 +4,27 @@ import Instrumento from "../../entities/Instrumento";
 import InstrumentoService from "../../services/InstrumentoService";
 import { nombreCategoria } from "../../services/formato";
 import TarjetaProducto from "../tarjetaProducto/TarjetaProducto";
+import heroInstrumentos from "../../assets/hero-instrumentos.png";
+import iconoCuerda from "../../assets/icons/icono-cuerda.svg?raw";
+import iconoViento from "../../assets/icons/icono-viento.svg?raw";
+import iconoPercusion from "../../assets/icons/icono-percusion.svg?raw";
+import iconoTeclado from "../../assets/icons/icono-teclado.svg?raw";
+import iconoElectronico from "../../assets/icons/icono-electronico.svg?raw";
 import "./Home.css";
 
 /*
- * Bootstrap Icons no tiene guitarra, piano ni batería, así que cada categoría
- * usa el ícono más cercano de los que sí existen.
+ * Los SVG se importan como texto (?raw) y se inyectan inline en vez de con
+ * <img>: así el "currentColor" de adentro del archivo hereda el color de
+ * .categoria__icono y sigue al acento del tema, igual que hacían los íconos
+ * de Bootstrap antes.
  */
 const ICONOS_CATEGORIA: Record<string, string> = {
-    Cuerda: "bi-music-note-beamed",
-    Viento: "bi-soundwave",
-    Percusion: "bi-disc",
-    Teclado: "bi-keyboard",
-    Electronico: "bi-sliders",
+    Cuerda: iconoCuerda,
+    Viento: iconoViento,
+    Percusion: iconoPercusion,
+    Teclado: iconoTeclado,
+    Electronico: iconoElectronico,
 };
-
-const ICONO_POR_DEFECTO = "bi-music-note";
 
 type ResumenCategoria = {
     denominacion: string;
@@ -67,7 +73,7 @@ const Home = () => {
         <>
             <section className="hero">
                 <div className="hero__texto">
-                    <h1 className="hero__titulo">Encontrá tu sonido.</h1>
+                    <h1 className="hero__titulo">Hacé sonar tus ideas.</h1>
                     <p className="hero__bajada">
                         Instrumentos y accesorios para cada forma de hacer música.
                     </p>
@@ -81,17 +87,8 @@ const Home = () => {
                     </div>
                 </div>
 
-                {/*
-                  * Composición decorativa. Va con íconos y no con fotos porque las del
-                  * catálogo son de 160x160 y a este tamaño se verían pixeladas.
-                  */}
                 <div className="hero__composicion" aria-hidden="true">
-                    <span className="hero__ficha hero__ficha--1"><i className="bi bi-music-note-beamed"></i></span>
-                    <span className="hero__ficha hero__ficha--2"><i className="bi bi-headphones"></i></span>
-                    <span className="hero__ficha hero__ficha--3"><i className="bi bi-keyboard"></i></span>
-                    <span className="hero__ficha hero__ficha--4"><i className="bi bi-soundwave"></i></span>
-                    <span className="hero__ficha hero__ficha--5"><i className="bi bi-speaker"></i></span>
-                    <span className="hero__ficha hero__ficha--6"><i className="bi bi-vinyl"></i></span>
+                    <img src={heroInstrumentos} alt="" className="hero__imagen" />
                 </div>
             </section>
 
@@ -112,10 +109,11 @@ const Home = () => {
                             to={`/products?categoria=${encodeURIComponent(categoria.denominacion)}`}
                             className="categoria"
                         >
-                            <i
-                                className={`bi ${ICONOS_CATEGORIA[categoria.denominacion] ?? ICONO_POR_DEFECTO} categoria__icono`}
+                            <span
+                                className="categoria__icono"
                                 aria-hidden="true"
-                            ></i>
+                                dangerouslySetInnerHTML={{ __html: ICONOS_CATEGORIA[categoria.denominacion] ?? "" }}
+                            ></span>
                             <span className="categoria__nombre">{nombreCategoria(categoria.denominacion)}</span>
                             <span className="categoria__cantidad">
                                 {categoria.cantidad} {categoria.cantidad === 1 ? "producto" : "productos"}

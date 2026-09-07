@@ -5,6 +5,8 @@ import { Roles } from "../../entities/Roles";
 import { useCarrito } from "../../hooks/useCarrito";
 import { Carrito } from "../Carrito/Carrito";
 import BotonTema from "../botonTema/BotonTema";
+import logoClaro from "../../assets/logo-tremolo-claro.png";
+import logoOscuro from "../../assets/logo-tremolo-oscuro.png";
 import './Navbar.css'
 
 const Navbar = () => {
@@ -27,11 +29,11 @@ const Navbar = () => {
 
     return (
         <>
-        <nav className="navbar navbar-expand-lg">
+        <nav className="navbar navbar-expand-lg sticky-top">
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">
-                    <span className="navbar-brand__marca">Trémolo</span>
-                    <span className="navbar-brand__bajada">instrumentos musicales</span>
+                    <img src={logoClaro} alt="Trémolo — Instrumentos musicales" className="navbar-brand__logo navbar-brand__logo--claro" />
+                    <img src={logoOscuro} alt="Trémolo — Instrumentos musicales" className="navbar-brand__logo navbar-brand__logo--oscuro" />
                 </Link>
                 <button
                     className="navbar-toggler"
@@ -98,7 +100,8 @@ const Navbar = () => {
                             <>
                                 <li className="nav-item">
                                     <span className="navbar-usuario">
-                                        {usuarioLogueado.nombreUsuario} · {usuarioLogueado.rol}
+                                        <i className="bi bi-person-circle" aria-hidden="true"></i>
+                                        {usuarioLogueado.nombreUsuario}
                                     </span>
                                 </li>
                                 <li className="nav-item">

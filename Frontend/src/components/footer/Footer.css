@@ -13,10 +13,45 @@
     gap: var(--espacio-grande);
 }
 
+.pie__marca-bloque {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-chico);
+    margin: 0 0 var(--espacio-chico);
+}
+
+.pie__isotipo {
+    height: 30px;
+    width: auto;
+    display: block;
+}
+
+/* Misma técnica que el logo del navbar: cada versión está dibujada para su
+   propio fondo, no es la misma imagen con los colores invertidos. */
+.pie__isotipo--oscuro {
+    display: none;
+}
+
+html[data-tema="oscuro"] .pie__isotipo--claro {
+    display: none;
+}
+
+html[data-tema="oscuro"] .pie__isotipo--oscuro {
+    display: block;
+}
+
 .pie__marca {
     font-family: var(--fuente-titulos);
     font-size: 1.2rem;
     color: var(--texto-primario);
+    margin: 0;
+}
+
+.pie__titulo-columna {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--texto-tenue);
     margin: 0 0 var(--espacio-chico);
 }
 

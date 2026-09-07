@@ -16,19 +16,27 @@
 
 .navbar-brand {
     display: flex;
-    flex-direction: column;
-    line-height: 1.15;
+    align-items: center;
 }
 
-.navbar-brand__marca {
-    font-family: var(--fuente-titulos);
-    font-size: 1.35rem;
+.navbar-brand__logo {
+    height: 48px;
+    width: auto;
+    display: block;
 }
 
-.navbar-brand__bajada {
-    font-size: 0.68rem;
-    color: var(--texto-tenue);
-    letter-spacing: 0.03em;
+/* Se elige la versión según el tema en vez de filtrar una sola imagen: cada
+   una viene diseñada a mano para su fondo, no es la misma con los colores invertidos. */
+.navbar-brand__logo--oscuro {
+    display: none;
+}
+
+html[data-tema="oscuro"] .navbar-brand__logo--claro {
+    display: none;
+}
+
+html[data-tema="oscuro"] .navbar-brand__logo--oscuro {
+    display: block;
 }
 
 .navbar-nav .nav-item {
@@ -54,9 +62,20 @@
 }
 
 .navbar-usuario {
-    color: var(--texto-tenue);
-    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: var(--radio-borde);
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
     white-space: nowrap;
+}
+
+.navbar-usuario .bi {
+    color: var(--texto-tenue);
 }
 
 /* ---- Carrito ---- */

@@ -100,30 +100,18 @@
     flex-wrap: wrap;
 }
 
-/* Composición de fichas escalonadas: reemplaza a la foto de banda del carrusel anterior */
+/* Composición fotográfica: sin marco ni fondo propio, se apoya directo sobre el del hero */
 .hero__composicion {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--espacio-medio);
-}
-
-.hero__ficha {
-    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--superficie-tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-tarjeta);
-    font-size: 1.8rem;
-    color: var(--texto-tenue);
 }
 
-/* El escalonado y los dos acentos evitan que la grilla se lea como una tabla */
-.hero__ficha--1 { transform: translateY(14px); color: var(--acento); }
-.hero__ficha--3 { transform: translateY(-14px); }
-.hero__ficha--4 { transform: translateY(14px); }
-.hero__ficha--6 { transform: translateY(-14px); color: var(--acento); }
+.hero__imagen {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
 
 /* ---- Categorías ---- */
 
@@ -152,8 +140,13 @@
 }
 
 .categoria__icono {
-    font-size: 2rem;
+    display: inline-flex;
     color: var(--acento);
+}
+
+.categoria__icono svg {
+    width: 2rem;
+    height: 2rem;
 }
 
 .categoria__nombre {
@@ -203,10 +196,5 @@
     .hero {
         grid-template-columns: 1fr;
         padding: 2.5rem var(--espacio-medio);
-    }
-
-    /* Escalonar en pantalla angosta desalinea la grilla y deja huecos */
-    .hero__ficha {
-        transform: none;
     }
 }
