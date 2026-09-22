@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 
 @Service
@@ -122,7 +123,7 @@ public class InstrumentoPrintManager {
             leftColumn.setWidthPercentage(100);
 
             // Agregar imagen
-            Image imgInstrumento = Image.getInstance(rutaDeImagen(instrumento.getImagen()));
+            Image imgInstrumento = cargarImagenInstrumento(instrumento.getImagen());
             imgInstrumento.scaleAbsolute(150f, 150f);
             imgInstrumento.setAlignment(Image.ALIGN_CENTER);
 
@@ -201,14 +202,26 @@ public class InstrumentoPrintManager {
 
     /**
      * Una imagen puede venir de la carpeta de subidas (instrumentos cargados
-     * desde el formulario) o de las diez semillas del proyecto, que solo
-     * existen en el código fuente. Se prueba la carpeta de subidas primero.
+     * desde el formulario, un archivo real en disco) o de las diez semillas
+     * del proyecto (empaquetadas en el jar bajo static/images, no un archivo
+     * suelto). Antes esto último se resolvía como una ruta relativa a
+     * src/main/resources/static/images/, que solo existe corriendo desde el
+     * código fuente (./gradlew bootRun) — dentro del contenedor deployado,
+     * donde lo único que hay es el jar, esa ruta no existe y el PDF de
+     * cualquier instrumento de semilla fallaba. Se lee del classpath en vez
+     * de eso, que funciona igual desde el jar que desde el código fuente.
      */
-    private String rutaDeImagen(String nombreArchivo) {
+    private Image cargarImagenInstrumento(String nombreArchivo) throws IOException, BadElementException {
         Path rutaSubida = imagenService.resolverRutaSiExiste(nombreArchivo);
-        return rutaSubida != null
-                ? rutaSubida.toString()
-                : "src/main/resources/static/images/" + nombreArchivo;
+        if (rutaSubida != null) {
+            return Image.getInstance(rutaSubida.toString());
+        }
+
+        URL recursoEmpaquetado = getClass().getResource("/static/images/" + nombreArchivo);
+        if (recursoEmpaquetado == null) {
+            throw new IOException("No se encontró la imagen del instrumento: " + nombreArchivo);
+        }
+        return Image.getInstance(recursoEmpaquetado);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(InstrumentoPrintManager.class);
