@@ -43,9 +43,19 @@ html[data-tema="oscuro"] .navbar-brand__logo--oscuro {
     margin-right: 20px;
 }
 
+/* Fuerza fila incluso en mobile: por default Bootstrap apila en columna todo
+   lo que está dentro del menú colapsado, y este grupo (carrito, tema, sesión)
+   se ve mal así, sobre todo en el menú abierto en pantallas chicas. */
 .navbar-nav.ml-auto {
     margin-left: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 0.6rem;
+}
+
+.navbar-nav.ml-auto .nav-item {
+    margin-right: 0;
 }
 
 /* Hasta ahora este botón se pintaba con una regla suelta de Login.css */
