@@ -100,6 +100,9 @@
 
 @media (max-width: 640px) {
     .formulario__campos {
-        grid-template-columns: 1fr;
+        /* minmax(0, 1fr), no 1fr a secas: sin el mínimo en 0, la columna se
+           estira hasta el ancho "natural" de un input (que no se achica
+           fácil) y se desborda del recuadro — el clásico grid blowout. */
+        grid-template-columns: minmax(0, 1fr);
     }
 }
