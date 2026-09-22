@@ -6,14 +6,14 @@ A full-stack e-commerce demo for a fictional musical instrument store, built as 
 
 This repository holds two independent projects:
 
-- **[Backend/](Backend)** — Spring Boot REST API (Java, MySQL, JWT auth, Mercado Pago integration). See [Backend/README.md](Backend/README.md).
+- **[Backend/](Backend)** — Spring Boot REST API (Java, MySQL/H2, JWT auth, Mercado Pago integration). See [Backend/README.md](Backend/README.md).
 - **[Frontend/](Frontend)** — React + TypeScript single-page app. See [Frontend/README.md](Frontend/README.md).
 
 ## Tech stack
 
 | | |
 |---|---|
-| **Backend** | Java 17, Spring Boot 3.2.5, Spring Security, Spring Data JPA / Hibernate, MySQL, JWT (jjwt), Bean Validation, Apache POI (Excel export), iText (PDF export), Mercado Pago Java SDK, Gradle |
+| **Backend** | Java 17, Spring Boot 3.2.5, Spring Security, Spring Data JPA / Hibernate, MySQL (local) / H2 (deployed demo), JWT (jjwt), Bean Validation, Apache POI (Excel export), iText (PDF export), Mercado Pago Java SDK, Gradle |
 | **Frontend** | React 18, TypeScript, Vite, React Router 6, Bootstrap 5.3.3 (CDN), react-google-charts, react-modal, Mercado Pago React SDK |
 
 ## Architecture
@@ -22,7 +22,7 @@ This repository holds two independent projects:
 flowchart LR
     User(["Browser"]) -->|HTTP| FE["React + Vite\nfrontend"]
     FE -->|"REST API\n(JWT bearer token)"| BE["Spring Boot\nbackend"]
-    BE --> DB[("MySQL")]
+    BE --> DB[("MySQL / H2")]
     BE -->|"Payments API\n(server-side verification)"| MP["Mercado Pago"]
     FE -.->|"Checkout redirect"| MP
 ```

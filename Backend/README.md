@@ -6,7 +6,7 @@ Spring Boot REST API for the [Trémolo](../README.md) instrument store: catalogu
 
 - Java 17, Spring Boot 3.2.5, Gradle
 - Spring Security + JWT (`jjwt`) — stateless authentication, BCrypt password hashing
-- Spring Data JPA / Hibernate + MySQL
+- Spring Data JPA / Hibernate — MySQL for local dev, in-memory H2 for the deployed demo (see [Deployment](#deployment))
 - Bean Validation for request payloads
 - Apache POI (Excel export) and iText (PDF export)
 - Mercado Pago Java SDK
