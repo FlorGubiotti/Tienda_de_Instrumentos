@@ -19,6 +19,7 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
   const [idPreference, setIdPreference] = useState<string>('');
   const preferenceMPService = new PreferenceMPService();
   const [mostrarPagoMP, setMostrarPagoMP] = useState(false);
+  const [preparandoPago, setPreparandoPago] = useState(false);
 
   const getPreferenceMP = async () => {
     if (cart.length > 0) {
@@ -29,6 +30,7 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
         cantidad: detalle.cantidad,
       }));
 
+      setPreparandoPago(true);
       try {
         const response = await preferenceMPService.createPreferenceMP(request);
         if (response && response.id) {
@@ -39,6 +41,8 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
         }
       } catch (error) {
         console.error('Error al crear preferencia de Mercado Pago:', error);
+      } finally {
+        setPreparandoPago(false);
       }
     } else {
       alert("Agregá al menos un instrumento al carrito");
@@ -47,7 +51,15 @@ function CheckoutMP({ cart }: CheckoutMPProps) {
 
   return (
     <div>
-      <button onClick={getPreferenceMP} className="btn-mercado-pago" >COMPRAR con Mercado Pago</button>
+      {!mostrarPagoMP && (
+        <button onClick={getPreferenceMP} className="btn-mercado-pago" disabled={preparandoPago}>
+          {preparandoPago ? (
+            <>
+              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Preparando pago...
+            </>
+          ) : "COMPRAR con Mercado Pago"}
+        </button>
+      )}
       {mostrarPagoMP && (
               <div className={idPreference ? 'divVisible' : 'divInvisible'}>
               <Wallet initialization={{ preferenceId: idPreference, redirectMode: "blank" }} customization={{ texts: { valueProp: 'smart_option' } }} />

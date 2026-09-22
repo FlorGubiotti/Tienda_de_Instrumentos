@@ -11,6 +11,7 @@ function Login() {
   const navigate = useNavigate();
   const [usuario] = useState<Usuario>(new Usuario());
   const [txtValidacion, setTxtValidacion] = useState<string>("");
+  const [ingresando, setIngresando] = useState(false);
 
   const handleLogin = async () => {
     if (!usuario?.nombreUsuario || usuario?.nombreUsuario === "") {
@@ -22,6 +23,7 @@ function Login() {
       return;
     }
 
+    setIngresando(true);
     try {
       const sesion = await login(usuario.nombreUsuario, usuario.clave);
       guardarSesion(sesion);
@@ -30,6 +32,7 @@ function Login() {
       navigate(destino, { replace: true });
     } catch (error) {
       setTxtValidacion("Usuario o contraseña incorrectos");
+      setIngresando(false);
     }
   };
 
@@ -71,8 +74,12 @@ function Login() {
             />
           </div>
           <div className="d-grid">
-            <button onClick={handleLogin} className="btn btn-success" type="button">
-              Ingresar
+            <button onClick={handleLogin} className="btn btn-success" type="button" disabled={ingresando}>
+              {ingresando ? (
+                <>
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Ingresando...
+                </>
+              ) : "Ingresar"}
             </button>
           </div>
           <div className="mt-3">

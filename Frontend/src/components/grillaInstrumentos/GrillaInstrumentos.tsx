@@ -32,6 +32,8 @@ const GrillaInstrumentos = () => {
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [verDadosDeBaja, setVerDadosDeBaja] = useState(false);
+    const [generandoExcel, setGenerandoExcel] = useState(false);
+    const [generandoPdfId, setGenerandoPdfId] = useState<number | null>(null);
 
     const esAdmin = usuarioLogueado?.rol === Roles.ADMIN;
     // El alta, la edición y la baja/reactivación de instrumentos son trabajo diario
@@ -81,20 +83,28 @@ const GrillaInstrumentos = () => {
 
     const generarExcel = async () => {
         if (fechaDesde && fechaHasta) {
-            const urlExcel = `${url}pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
-            await descargarArchivo(urlExcel, 'datos.xlsx');
-            cerrarModal();
+            setGenerandoExcel(true);
+            try {
+                const urlExcel = `${url}pedido/downloadExcel?fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+                await descargarArchivo(urlExcel, 'datos.xlsx');
+                cerrarModal();
+            } finally {
+                setGenerandoExcel(false);
+            }
         } else {
             alert('Por favor ingresa ambas fechas.');
         }
     }
 
     const generarFichaPdf = async (instrumento: Instrumento) => {
+        setGenerandoPdfId(instrumento.id);
         try {
             await descargarArchivo(`${url}pedido/downloadPdf/${instrumento.id}`, `${instrumento.instrumento}.pdf`);
         } catch (e) {
             console.error('Error al generar la ficha PDF:', e);
             alert('No se pudo generar el PDF. Probá de nuevo más tarde.');
+        } finally {
+            setGenerandoPdfId(null);
         }
     }
 
@@ -195,8 +205,11 @@ const GrillaInstrumentos = () => {
                                                 type="button"
                                                 title="Generar ficha en PDF"
                                                 onClick={() => generarFichaPdf(instrumento)}
+                                                disabled={generandoPdfId === instrumento.id}
                                             >
-                                                <i className="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                                                {generandoPdfId === instrumento.id
+                                                    ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                    : <i className="bi bi-file-earmark-pdf" aria-hidden="true"></i>}
                                             </button>
                                             {instrumento.activo ? (
                                                 <button
@@ -249,8 +262,14 @@ const GrillaInstrumentos = () => {
                     />
                 </div>
                 <div className="panel-modal__acciones">
-                    <button type="button" className="panel-boton panel-boton--secundario" onClick={cerrarModal}>Cancelar</button>
-                    <button type="button" className="panel-boton panel-boton--principal" onClick={generarExcel}>Generar</button>
+                    <button type="button" className="panel-boton panel-boton--secundario" onClick={cerrarModal} disabled={generandoExcel}>Cancelar</button>
+                    <button type="button" className="panel-boton panel-boton--principal" onClick={generarExcel} disabled={generandoExcel}>
+                        {generandoExcel ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generando...
+                            </>
+                        ) : "Generar"}
+                    </button>
                 </div>
             </Modal>
         </div>
