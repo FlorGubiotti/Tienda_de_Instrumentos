@@ -140,6 +140,16 @@ Product photos go through `ImagenService`, which:
 
 `WebConfig` serves `/images/**` from both the classpath (the 10 seed photos bundled in the jar) and the uploads directory, so the frontend doesn't need to know which one a given file lives in.
 
+## Deployment
+
+There's a second profile, `prod`, meant for a public demo deploy (e.g. Render) instead of local development:
+
+- **Database**: in-memory H2 instead of MySQL (see [`application-prod.properties`](src/main/resources/application-prod.properties)). It starts empty on every process restart and `DataInitializer` reseeds it automatically — intentional for a portfolio demo, not an oversight. It also means the free-tier host's own idle-restart doubles as an automatic reset if anyone messes with the data through the admin panel.
+- **Port**: `server.port` reads the `PORT` environment variable (Render assigns one at runtime), falling back to `8080` for local dev.
+- **Secrets**: `jwt.secret` and `mercadopago.access-token` aren't set in any committed file for this profile — they're expected as environment variables (`JWT_SECRET`, `MERCADOPAGO_ACCESS_TOKEN`) on whatever platform runs it, using Spring Boot's standard relaxed env-var binding.
+
+To run it: set `SPRING_PROFILES_ACTIVE=prod` plus `JWT_SECRET`, `MERCADOPAGO_ACCESS_TOKEN`, `APP_FRONTEND_URL` (the deployed frontend's URL), and `APP_CORS_ALLOWED_ORIGINS` (same value, so the frontend's origin is allowed to call the API) as environment variables on the host. Keep `MERCADOPAGO_ACCESS_TOKEN` on a **test** credential — never a production one — for a public demo.
+
 ## Configuration reference
 
 Non-secret settings, in `application.properties`:
