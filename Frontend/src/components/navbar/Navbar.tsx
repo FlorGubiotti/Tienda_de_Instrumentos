@@ -27,6 +27,31 @@ const Navbar = () => {
 
     const esAdmin = usuarioLogueado?.rol === Roles.ADMIN;
 
+    // Se llama dos veces (una visible solo en mobile, otra solo en desktop, por
+    // CSS): el ícono tiene que verse siempre, sin depender de abrir el menú
+    // colapsado, para que agregar algo al carrito se note al toque.
+    const renderBotonCarrito = (variante: string) => (
+        <button
+            type="button"
+            className={`boton-carrito ${variante}`}
+            data-bs-toggle="offcanvas"
+            data-bs-target="#panelCarrito"
+            aria-controls="panelCarrito"
+            aria-label={
+                cantidadTotal === 0
+                    ? "Abrir el carrito, está vacío"
+                    : `Abrir el carrito, ${cantidadTotal} ${cantidadTotal === 1 ? 'unidad' : 'unidades'}`
+            }
+        >
+            <i className="bi bi-cart" aria-hidden="true"></i>
+            {cantidadTotal > 0 && (
+                <span className="boton-carrito__contador" aria-hidden="true">
+                    {cantidadTotal}
+                </span>
+            )}
+        </button>
+    );
+
     return (
         <>
         <nav className="navbar navbar-expand-lg sticky-top">
@@ -35,17 +60,20 @@ const Navbar = () => {
                     <img src={logoClaro} alt="Trémolo — Instrumentos musicales" className="navbar-brand__logo navbar-brand__logo--claro" />
                     <img src={logoOscuro} alt="Trémolo — Instrumentos musicales" className="navbar-brand__logo navbar-brand__logo--oscuro" />
                 </Link>
-                <button
-                    className="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Abrir menú de navegación"
-                >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
+                <div className="navbar-acciones-mobile">
+                    {renderBotonCarrito('boton-carrito--mobile')}
+                    <button
+                        className="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav"
+                        aria-controls="navbarNav"
+                        aria-expanded="false"
+                        aria-label="Abrir menú de navegación"
+                    >
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                </div>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
                         <li className="nav-item">
@@ -73,25 +101,7 @@ const Navbar = () => {
 
                     <ul className="navbar-nav ml-auto">
                         <li className="nav-item">
-                            <button
-                                type="button"
-                                className="boton-carrito"
-                                data-bs-toggle="offcanvas"
-                                data-bs-target="#panelCarrito"
-                                aria-controls="panelCarrito"
-                                aria-label={
-                                    cantidadTotal === 0
-                                        ? "Abrir el carrito, está vacío"
-                                        : `Abrir el carrito, ${cantidadTotal} ${cantidadTotal === 1 ? 'unidad' : 'unidades'}`
-                                }
-                            >
-                                <i className="bi bi-cart" aria-hidden="true"></i>
-                                {cantidadTotal > 0 && (
-                                    <span className="boton-carrito__contador" aria-hidden="true">
-                                        {cantidadTotal}
-                                    </span>
-                                )}
-                            </button>
+                            {renderBotonCarrito('boton-carrito--desktop')}
                         </li>
                         <li className="nav-item">
                             <BotonTema />

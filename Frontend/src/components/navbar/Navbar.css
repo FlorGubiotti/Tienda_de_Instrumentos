@@ -90,6 +90,14 @@ html[data-tema="oscuro"] .navbar-brand__logo--oscuro {
 
 /* ---- Carrito ---- */
 
+/* Agrupa el carrito con el botón de hamburguesa para que los dos queden
+   pegados a la derecha, en vez de repartidos por el space-between del navbar. */
+.navbar-acciones-mobile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .boton-carrito {
     position: relative;
     display: inline-flex;
@@ -116,6 +124,29 @@ html[data-tema="oscuro"] .navbar-brand__logo--oscuro {
 .boton-carrito:focus-visible {
     outline: 2px solid var(--acento);
     outline-offset: 2px;
+}
+
+/* El botón existe dos veces en el markup (uno siempre visible junto al
+   toggler, otro adentro del menú colapsado) y CSS elige cuál mostrar según el
+   ancho — así el cliente ve que agregó algo al carrito sin tener que abrir
+   el menú para comprobarlo. Van después de la regla base .boton-carrito
+   (misma especificidad) para que su display gane en la cascada. */
+.boton-carrito--desktop {
+    display: none;
+}
+
+.boton-carrito--mobile {
+    margin-right: 0;
+}
+
+@media (min-width: 992px) {
+    .boton-carrito--mobile {
+        display: none;
+    }
+
+    .boton-carrito--desktop {
+        display: inline-flex;
+    }
 }
 
 .boton-carrito__contador {
